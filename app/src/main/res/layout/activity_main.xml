@@ -64,10 +64,19 @@
             android:layout_marginTop="10dp"
             android:text="@string/clean" />
         <ImageButton
-            android:id="@+id/wifi"
+            android:id="@+id/info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/receiver"
+            android:layout_below="@id/clean_2"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/border_white"
+            android:src="@drawable/info"/>
+        <ImageButton
+            android:id="@+id/wifi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/info"
             android:layout_below="@id/clean_2"
             android:layout_marginTop="10dp"
             android:background="@drawable/border_white"

@@ -65,9 +65,9 @@ public class MainActivity extends AppCompatActivity {
 
     private Button send, clean_1, clean_2;
 
-    static String ip, patterns;
-
-    static int port_num;
+    static String ip="", patterns="";
+    static String motor_pattern="",motor_speed="",motor_pulse="",motor_direction="",laser_channel="",valve_pos="";
+    static int port_num=0;
 
     public Handler myHandler = new Handler() {
         @Override
@@ -117,12 +117,25 @@ public class MainActivity extends AppCompatActivity {
         getAxisXLables();//获取x轴的标注
         getAxisPoints();//获取坐标点
         initLineChart();//初始化
+        ImageButton infoBtn = (ImageButton) findViewById(R.id.info);
         ImageButton wifiBtn = (ImageButton) findViewById(R.id.wifi);
         ImageButton getBtn = (ImageButton) findViewById(R.id.get);
         final ImageButton doBtn = (ImageButton) findViewById(R.id.go);
 //        wifiBtn.setScaleType(ImageView.ScaleType.FIT_XY);
 //        getBtn.setScaleType(ImageView.ScaleType.FIT_XY);
 //        doBtn.setScaleType(ImageView.ScaleType.FIT_XY);
+        infoBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                String info="motor_pattern:"+motor_pattern+"\nmotor_speed:"+
+                        motor_speed+"\nmotor_pulse:"+
+                        motor_pulse+"\nmotor_direction:"+
+                        motor_direction+"\nlaser_channel:"+
+                        laser_channel+"\nvalve_position:"+
+                        valve_pos;
+                Toast.makeText(MainActivity.this, info, Toast.LENGTH_LONG).show();
+
+            }
+        });
         getBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //sendText.setText("");
@@ -254,12 +267,22 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case 1:
                 if (resultCode == RESULT_OK) {
-//                    String ip_adress = data.getStringExtra("ip_adress");
-//                    String port = data.getStringExtra("port_num");
-//                    String pattern = data.getStringExtra("pattern");
-//                    ip = ip_adress;
-//                    port_num = Integer.parseInt(port);
-//                    patterns = pattern;
+                    String ip_adress = data.getStringExtra("ip_adress");
+                    String port = data.getStringExtra("port_num");
+                    String pattern = data.getStringExtra("pattern");
+                    ip = ip_adress;
+                //    port_num = Integer.parseInt(port);
+                    patterns = pattern;
+                }
+                break;
+            case 2:
+                if (resultCode == RESULT_OK) {
+                    motor_pattern = data.getStringExtra("motor_pattern");
+                    motor_speed = data.getStringExtra("motor_speed");
+                    motor_pulse = data.getStringExtra("motor_pulse");
+                    motor_direction = data.getStringExtra("motor_direction");
+                    laser_channel = data.getStringExtra("laser_channel");
+                    valve_pos = data.getStringExtra("valve_pos");
                 }
                 break;
             default:
