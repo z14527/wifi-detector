@@ -33,8 +33,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".MotorSettingActivity" 
-		android:theme="@style/SettingTheme"/>
+        <activity android:name=".MotorSettingActivity" />
         <activity android:name=".MotorSelectWindow" />
         <activity android:name=".MotorSpeedSelectWindow" />
         <activity android:name=".MotorDirectionSelectWindow" />

@@ -26,7 +26,7 @@
         android:orientation="vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingTop="80dp"
+        android:paddingTop="100dp"
         android:paddingBottom="100dp">
 
             <TableLayout

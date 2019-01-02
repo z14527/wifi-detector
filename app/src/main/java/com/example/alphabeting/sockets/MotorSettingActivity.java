@@ -23,7 +23,7 @@ public class MotorSettingActivity extends AppCompatActivity {
     private SharedPreferences pref;
 
     private SharedPreferences.Editor editor;
-    static boolean dataStore = true;
+    static boolean dataStore = false;
     private Toolbar mToolbar;
     private MotorSelectWindow motorSelectWindow=null;
     private MotorSpeedSelectWindow motorSpeedSelectWindow=null;
@@ -31,11 +31,12 @@ public class MotorSettingActivity extends AppCompatActivity {
     private MotorPulseSelectWindow motorPulseSelectWindow=null;
     private LaserChannelSelectWindow laserChannelSelectWindow=null;
     private ValvePositionSelectWindow valvePositionSelectWindow=null;
-    static String motor_patterns;
+    static String motor_patterns="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.motor_setting);
+        initToolbar();
         WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(dm);
@@ -94,34 +95,9 @@ public class MotorSettingActivity extends AppCompatActivity {
                 valvePositionSelectWindow.showAtLocation(MotorSettingActivity.this.findViewById(R.id.mainMotor), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
             }
         });
-        initToolbar();
         mToolbar.setNavigationOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-//                String ip1 = ip_1.getText().toString();
-//                String ip2 = ip_2.getText().toString();
-//                String ip3 = ip_3.getText().toString();
-//                String ip4 = ip_4.getText().toString();
-//                String ip = ip1+"."+ip2+"."+ip3+"."+ip4;
-//                String ports = port.getText().toString();
-//
-      //          Intent intent = new Intent();
-//                intent.putExtra("ip_adress",ip);
-//                intent.putExtra("port_num",ports);
-//                intent.putExtra("pattern",patterns);
-        //        setResult(RESULT_OK,intent);
-
-        //        editor = pref.edit();
-//                editor.putString("ip1",ip1);
-//                editor.putString("ip2",ip2);
-//                editor.putString("ip3",ip3);
-//                editor.putString("ip4",ip4);
-//                editor.putString("ports",ports);
-//                editor.putString("patterns",patterns);
-          //      editor.commit();
-            //    finish();
-                dataStore = true;
-
                 onBackPressed();
             }
         });
@@ -171,7 +147,6 @@ public class MotorSettingActivity extends AppCompatActivity {
 //        editor.commit();
         finish();
         dataStore = true;
-
     }
     private  View.OnClickListener itemsOnClick = new View.OnClickListener(){
         public  void  onClick(View v){
@@ -257,9 +232,11 @@ public class MotorSettingActivity extends AppCompatActivity {
     };
     private void initToolbar(){
         mToolbar = (Toolbar) findViewById(R.id.toolbar_2);
-      //  setSupportActionBar(mToolbar);
-      //  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setTitle("R.string.device_setting");
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        mToolbar.setNavigationIcon(R.mipmap.ic_back);
+  //      getSupportActionBar().setDisplayShowTitleEnabled(true);
+        mToolbar.setTitle(R.string.device_setting);
     }
 
 }

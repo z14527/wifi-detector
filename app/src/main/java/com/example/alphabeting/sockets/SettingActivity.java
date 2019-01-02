@@ -31,17 +31,17 @@ public class SettingActivity extends AppCompatActivity {
 
     private EditText ip_1,ip_2,ip_3,ip_4,port;
 
-    static boolean dataStore = true;
+    static boolean dataStore = false;
 
-    static String patterns;
+    static String patterns="";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
-        pref = PreferenceManager.getDefaultSharedPreferences(this);
         initToolbar();
+        pref = PreferenceManager.getDefaultSharedPreferences(this);
         final TableLayout pattern = (TableLayout) this.findViewById(R.id.pattern);
         final TableLayout about = (TableLayout) this.findViewById(R.id.about);
         ip_1 = (EditText)findViewById(R.id.ip_1);
@@ -73,29 +73,6 @@ public class SettingActivity extends AppCompatActivity {
         mToolbar.setNavigationOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                String ip1 = ip_1.getText().toString();
-                String ip2 = ip_2.getText().toString();
-                String ip3 = ip_3.getText().toString();
-                String ip4 = ip_4.getText().toString();
-                String ip = ip1+"."+ip2+"."+ip3+"."+ip4;
-                String ports = port.getText().toString();
-
-                Intent intent = new Intent();
-                intent.putExtra("ip_adress",ip);
-                intent.putExtra("port_num",ports);
-                intent.putExtra("pattern",patterns);
-                setResult(RESULT_OK,intent);
-
-                editor = pref.edit();
-                editor.putString("ip1",ip1);
-                editor.putString("ip2",ip2);
-                editor.putString("ip3",ip3);
-                editor.putString("ip4",ip4);
-                editor.putString("ports",ports);
-                editor.putString("patterns",patterns);
-                editor.commit();
-                finish();
-                dataStore = true;
 
                 onBackPressed();
             }
@@ -153,7 +130,9 @@ public class SettingActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setTitle("R.string.wifi_setting");
+      //  getSupportActionBar().setDisplayShowTitleEnabled(true);
+    //    mToolbar.setNavigationIcon(R.mipmap.ic_back);
+        mToolbar.setTitle(R.string.wifi_setting);
     }
 
     private  View.OnClickListener itemsOnClick = new View.OnClickListener(){

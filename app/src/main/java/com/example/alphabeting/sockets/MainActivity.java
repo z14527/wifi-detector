@@ -254,12 +254,12 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case 1:
                 if (resultCode == RESULT_OK) {
-                    String ip_adress = data.getStringExtra("ip_adress");
-                    String port = data.getStringExtra("port_num");
-                    String pattern = data.getStringExtra("pattern");
-                    ip = ip_adress;
-                    port_num = Integer.parseInt(port);
-                    patterns = pattern;
+//                    String ip_adress = data.getStringExtra("ip_adress");
+//                    String port = data.getStringExtra("port_num");
+//                    String pattern = data.getStringExtra("pattern");
+//                    ip = ip_adress;
+//                    port_num = Integer.parseInt(port);
+//                    patterns = pattern;
                 }
                 break;
             default:
