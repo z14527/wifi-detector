@@ -1,5 +1,7 @@
 package com.example.alphabeting.sockets;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -7,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
     private Button send, clean_1, clean_2;
 
     static String ip="", patterns="";
-    static String motor_pattern="",motor_speed="",motor_pulse="",motor_direction="",laser_channel="",valve_pos="";
+    static String wifi_name="",wifi_pwd="",wifi_port="",motor_pattern="",motor_speed="",motor_pulse="",
+            motor_direction="",laser_channel="",valve_pos="";
     static int port_num=0;
 
     public Handler myHandler = new Handler() {
@@ -126,14 +130,37 @@ public class MainActivity extends AppCompatActivity {
 //        doBtn.setScaleType(ImageView.ScaleType.FIT_XY);
         infoBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String info="motor_pattern:"+motor_pattern+"\nmotor_speed:"+
-                        motor_speed+"\nmotor_pulse:"+
-                        motor_pulse+"\nmotor_direction:"+
-                        motor_direction+"\nlaser_channel:"+
-                        laser_channel+"\nvalve_position:"+
-                        valve_pos;
-                Toast.makeText(MainActivity.this, info, Toast.LENGTH_LONG).show();
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("配置具体情况");    //设置对话框标题
+                builder.setIcon(android.R.drawable.btn_star);   //设置对话框标题前的图标
+                final TextView tv = new TextView(MainActivity.this);
+                //tv.setBackgroundResource(R.drawable.fengmian);
+                tv.setTextSize(25);
+                tv.setTextColor(Color.RED);
+                String info="Wifi名称："+wifi_name+
+                        "\nWifi密码："+wifi_pwd+
+                        "\nWifi端口："+wifi_port+
+                        "\n\n步进电机工作状态："+motor_pattern+
+                        "\n步进速度："+motor_speed+
+                        "\n步进脉冲："+motor_pulse+
+                        "\n步进方向："+motor_direction+
+                        "\n光开关通道："+laser_channel+
+                        "\n十通阀位置："+valve_pos;
+                tv.setText(info);
+                tv.setGravity(Gravity.CENTER_VERTICAL| Gravity.CENTER_HORIZONTAL);
+                tv.setMovementMethod(ScrollingMovementMethod.getInstance());
+                builder.setView(tv);
+                builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.setCancelable(true);    //设置按钮是否可以按返回键取消,false则不可以取消
+                AlertDialog dialog = builder.create();  //创建对话框
+                dialog.setCanceledOnTouchOutside(true); //设置弹出框失去焦点是否隐藏,即点击屏蔽其它地方是否隐藏
+                dialog.show();
+                //Toast.makeText(MainActivity.this, info, Toast.LENGTH_LONG).show();
             }
         });
         getBtn.setOnClickListener(new View.OnClickListener() {
@@ -267,10 +294,10 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case 1:
                 if (resultCode == RESULT_OK) {
-                    String ip_adress = data.getStringExtra("ip_adress");
-                    String port = data.getStringExtra("port_num");
+                    wifi_name = data.getStringExtra("wifi_name");
+                    wifi_pwd = data.getStringExtra("wifi_pwd");
+                    wifi_port = data.getStringExtra("wifi_port");
                     String pattern = data.getStringExtra("pattern");
-                    ip = ip_adress;
                 //    port_num = Integer.parseInt(port);
                     patterns = pattern;
                 }

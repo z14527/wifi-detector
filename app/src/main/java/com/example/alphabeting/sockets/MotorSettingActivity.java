@@ -197,52 +197,52 @@ public class MotorSettingActivity extends AppCompatActivity {
                 valvePositionSelectWindow.dismiss();
             switch(v.getId()){
                 case R.id.motorOK:
-                    motor_pattern = "OK";
-                    Toast.makeText(getApplicationContext(), "你点了OK", Toast.LENGTH_SHORT).show();
+                    motor_pattern = getString(R.string.motor_OK);
+                    Toast.makeText(getApplicationContext(), "你点了 "+motor_pattern, Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.motorClose:
-                    motor_pattern = "CLOSE";
-                    Toast.makeText(getApplicationContext(), "你点了CLOSE", Toast.LENGTH_SHORT).show();
+                    motor_pattern = getString(R.string.motor_Close);
+                    Toast.makeText(getApplicationContext(), "你点了 "+motor_pattern, Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.motorDirection1:
-                    motor_direction = "direction 1";
-                    Toast.makeText(getApplicationContext(), "你点了direction 1", Toast.LENGTH_SHORT).show();
+                    motor_direction = getString(R.string.motor_direction1);
+                    Toast.makeText(getApplicationContext(), "你点了 "+motor_direction, Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.motorDirection2:
-                    motor_direction = "direction 2";
-                    Toast.makeText(getApplicationContext(), "你点了direction 2", Toast.LENGTH_SHORT).show();
+                    motor_direction = getString(R.string.motor_direction2);
+                    Toast.makeText(getApplicationContext(), "你点了 "+motor_direction, Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.motorSpeed1:
-                    motor_speed = "speed 1";
-                    Toast.makeText(getApplicationContext(), "你点了speed 1", Toast.LENGTH_SHORT).show();
+                    motor_speed = getString(R.string.motor_speed1);
+                    Toast.makeText(getApplicationContext(), "你点了 "+motor_speed, Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.motorSpeed2:
-                    motor_speed = "speed 2";
-                    Toast.makeText(getApplicationContext(), "你点了speed 2", Toast.LENGTH_SHORT).show();
+                    motor_speed = getString(R.string.motor_speed2);
+                    Toast.makeText(getApplicationContext(), "你点了  "+motor_speed, Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.motorPulse1:
-                    motor_pulse = "pulse 1";
-                    Toast.makeText(getApplicationContext(), "你点了pulse 1", Toast.LENGTH_SHORT).show();
+                    motor_pulse = getString(R.string.motor_pulse1);
+                    Toast.makeText(getApplicationContext(), "你点了 "+motor_pulse, Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.motorPulse2:
-                    motor_pulse = "pulse 2";
-                    Toast.makeText(getApplicationContext(), "你点了pulse 2", Toast.LENGTH_SHORT).show();
+                    motor_pulse = getString(R.string.motor_pulse2);
+                    Toast.makeText(getApplicationContext(), "你点了 "+motor_pulse, Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.laserChannel1:
-                    laser_channel="channel 1";
-                    Toast.makeText(getApplicationContext(), "你点了channel 1", Toast.LENGTH_SHORT).show();
+                    laser_channel = getString(R.string.laser_channel1);
+                    Toast.makeText(getApplicationContext(), "你点了 "+laser_channel, Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.laserChannel2:
-                    laser_channel="channel 2";
-                    Toast.makeText(getApplicationContext(), "你点了channel 2", Toast.LENGTH_SHORT).show();
+                    laser_channel = getString(R.string.laser_channel2);
+                    Toast.makeText(getApplicationContext(), "你点了 "+laser_channel, Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.valvePosition1:
-                    valve_pos="position 1";
-                    Toast.makeText(getApplicationContext(), "你点了position 1", Toast.LENGTH_SHORT).show();
+                    valve_pos = getString(R.string.valve_position1);
+                    Toast.makeText(getApplicationContext(), "你点了 "+valve_pos, Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.valvePosition2:
-                    valve_pos="position 2";
-                    Toast.makeText(getApplicationContext(), "你点了position 2", Toast.LENGTH_SHORT).show();
+                    valve_pos = getString(R.string.valve_position2);
+                    Toast.makeText(getApplicationContext(), "你点了 "+valve_pos, Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.cancel:
                     if(motorSelectWindow!=null)

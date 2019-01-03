@@ -29,11 +29,11 @@ public class SettingActivity extends AppCompatActivity {
 
     private SelectWindow selectWindow;
 
-    private EditText ip_1,ip_2,ip_3,ip_4,port;
+    private EditText wifi_name,wifi_pwd,wifi_port;
 
     static boolean dataStore = false;
 
-    static String patterns="";
+    static String patterns="",wifiName="",wifiPwd="",wifiPort="";
 
 
     @Override
@@ -44,11 +44,9 @@ public class SettingActivity extends AppCompatActivity {
         pref = PreferenceManager.getDefaultSharedPreferences(this);
         final TableLayout pattern = (TableLayout) this.findViewById(R.id.pattern);
         final TableLayout about = (TableLayout) this.findViewById(R.id.about);
-        ip_1 = (EditText)findViewById(R.id.ip_1);
-        ip_2 = (EditText)findViewById(R.id.ip_2);
-        ip_3 = (EditText)findViewById(R.id.ip_3);
-        ip_4 = (EditText)findViewById(R.id.ip_4);
-        port = (EditText)findViewById(R.id.port);
+        wifi_name = (EditText)findViewById(R.id.wifi_name);
+        wifi_pwd = (EditText)findViewById(R.id.wifi_pwd);
+        wifi_port = (EditText)findViewById(R.id.port);
         pattern.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 selectWindow = new SelectWindow(SettingActivity.this,itemsOnClick);
@@ -79,59 +77,44 @@ public class SettingActivity extends AppCompatActivity {
         });
 
         if(dataStore){
-            String ip11 = pref.getString("ip1","");
-            String ip22 = pref.getString("ip2","");
-            String ip33 = pref.getString("ip3","");
-            String ip44 = pref.getString("ip4","");
-            String portss = pref.getString("ports","");
-            ip_1.setText(ip11);
-            ip_2.setText(ip22);
-            ip_3.setText(ip33);
-            ip_4.setText(ip44);
-            port.setText(portss);
+            wifiName = pref.getString("wifi_name","");
+            wifiPwd = pref.getString("wifi_pwd","");
+            wifiPort = pref.getString("wifi_port","");
+            wifi_name.setText(wifiName);
+            wifi_pwd.setText(wifiPwd);
+            wifi_port.setText(wifiPort);
         }
     }
 
     @Override
     public void onBackPressed(){
 
-        ip_1 = (EditText)findViewById(R.id.ip_1);
-        ip_2 = (EditText)findViewById(R.id.ip_2);
-        ip_3 = (EditText)findViewById(R.id.ip_3);
-        ip_4 = (EditText)findViewById(R.id.ip_4);
-        port = (EditText)findViewById(R.id.port);
-        String ip1 = ip_1.getText().toString();
-        String ip2 = ip_2.getText().toString();
-        String ip3 = ip_3.getText().toString();
-        String ip4 = ip_4.getText().toString();
-        String ip = ip1+"."+ip2+"."+ip3+"."+ip4;
-        String ports = port.getText().toString();
-
+        wifi_name = (EditText)findViewById(R.id.wifi_name);
+        wifi_pwd = (EditText)findViewById(R.id.wifi_pwd);
+        wifi_port = (EditText)findViewById(R.id.port);
+        wifiName = wifi_name.getText().toString();
+        wifiPwd = wifi_pwd.getText().toString();
+        wifiPort = wifi_port.getText().toString();
         Intent intent = new Intent();
-        intent.putExtra("ip_adress",ip);
-        intent.putExtra("port_num",ports);
-        intent.putExtra("pattern",patterns);
+        intent.putExtra("wifi_name",wifiName);
+        intent.putExtra("wifi_pwd",wifiPwd);
+        intent.putExtra("wifi_port",wifiPort);
         setResult(RESULT_OK,intent);
 
         editor = pref.edit();
-        editor.putString("ip1",ip1);
-        editor.putString("ip2",ip2);
-        editor.putString("ip3",ip3);
-        editor.putString("ip4",ip4);
-        editor.putString("ports",ports);
+        editor.putString("wifi_name",wifiName);
+        editor.putString("wifi_pwd",wifiPwd);
+        editor.putString("wifi_port",wifiPort);
         editor.putString("patterns",patterns);
         editor.commit();
         finish();
         dataStore = true;
-
     }
 
     private void initToolbar(){
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-      //  getSupportActionBar().setDisplayShowTitleEnabled(true);
-    //    mToolbar.setNavigationIcon(R.mipmap.ic_back);
         mToolbar.setTitle(R.string.wifi_setting);
     }
 
