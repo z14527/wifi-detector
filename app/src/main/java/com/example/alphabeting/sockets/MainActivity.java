@@ -3,10 +3,12 @@ package com.example.alphabeting.sockets;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button send, clean_1, clean_2;
 
+    private SharedPreferences pref;
     static String ip="", patterns="";
     static String wifi_name="",wifi_pwd="",wifi_port="",motor_pattern="",motor_speed="",motor_pulse="",
             motor_direction="",laser_channel="",valve_pos="";
@@ -90,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        pref = PreferenceManager.getDefaultSharedPreferences(this);
+
         sendText = (EditText) findViewById(R.id.sendText);
         Receiver = (TextView) findViewById(R.id.receiver);
         Receiver.setMovementMethod(ScrollingMovementMethod.getInstance());
@@ -121,6 +126,16 @@ public class MainActivity extends AppCompatActivity {
         getAxisXLables();//获取x轴的标注
         getAxisPoints();//获取坐标点
         initLineChart();//初始化
+        motor_pattern = pref.getString("motor_pattern","");
+        motor_speed = pref.getString("motor_speed","");
+        motor_pulse = pref.getString("motor_pulse","");
+        motor_direction = pref.getString("motor_direction","");
+        laser_channel = pref.getString("laser_channel","");
+        valve_pos = pref.getString("valve_pos","");
+        wifi_name = pref.getString("wifi_name","");
+        wifi_pwd = pref.getString("wifi_pwd","");
+        wifi_port = pref.getString("wifi_port","");
+
         ImageButton infoBtn = (ImageButton) findViewById(R.id.info);
         ImageButton wifiBtn = (ImageButton) findViewById(R.id.wifi);
         ImageButton getBtn = (ImageButton) findViewById(R.id.get);

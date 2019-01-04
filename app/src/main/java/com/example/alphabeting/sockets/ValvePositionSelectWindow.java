@@ -17,7 +17,7 @@ import android.widget.PopupWindow;
 public class ValvePositionSelectWindow extends PopupWindow {
 
 
-    private Button btn_pos1,btn_pos2,btn_cancel;
+    private Button btn_pos1,btn_pos2,btn_pos1_modify,btn_pos2_modify,btn_cancel;
 
     private View mMenuView;
 
@@ -27,11 +27,15 @@ public class ValvePositionSelectWindow extends PopupWindow {
         mMenuView = inflater.inflate(R.layout.activity_valve_position_select_window,null);
         btn_pos1 = (Button) mMenuView.findViewById(R.id.valvePosition1);
         btn_pos2 = (Button) mMenuView.findViewById(R.id.valvePosition2);
+        btn_pos1_modify = (Button) mMenuView.findViewById(R.id.valvePosition1Modify);
+        btn_pos2_modify = (Button) mMenuView.findViewById(R.id.valvePosition2Modify);
         btn_cancel = (Button) mMenuView.findViewById(R.id.cancel);
 
         btn_cancel.setOnClickListener(itemsOnClick);
         btn_pos1.setOnClickListener(itemsOnClick);
         btn_pos2.setOnClickListener(itemsOnClick);
+        btn_pos1_modify.setOnClickListener(itemsOnClick);
+        btn_pos2_modify.setOnClickListener(itemsOnClick);
 
         this.setContentView(mMenuView);
         this.setWidth(ViewGroup.LayoutParams.FILL_PARENT);

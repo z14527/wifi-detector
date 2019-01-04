@@ -17,7 +17,7 @@ import android.widget.PopupWindow;
 public class MotorSelectWindow extends PopupWindow {
 
 
-    private Button btn_ok,btn_close,btn_cancel;
+    private Button btn_ok,btn_close,btn_ok_modify,btn_close_modify,btn_cancel;
 
     private View mMenuView;
 
@@ -28,10 +28,14 @@ public class MotorSelectWindow extends PopupWindow {
         btn_ok = (Button) mMenuView.findViewById(R.id.motorOK);
         btn_close = (Button) mMenuView.findViewById(R.id.motorClose);
         btn_cancel = (Button) mMenuView.findViewById(R.id.cancel);
+        btn_ok_modify = (Button) mMenuView.findViewById(R.id.motorOKModify);
+        btn_close_modify = (Button) mMenuView.findViewById(R.id.motorCloseModify);
 
         btn_cancel.setOnClickListener(itemsOnClick);
         btn_ok.setOnClickListener(itemsOnClick);
         btn_close.setOnClickListener(itemsOnClick);
+        btn_ok_modify.setOnClickListener(itemsOnClick);
+        btn_close_modify.setOnClickListener(itemsOnClick);
 
         this.setContentView(mMenuView);
         this.setWidth(ViewGroup.LayoutParams.FILL_PARENT);

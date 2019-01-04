@@ -17,7 +17,7 @@ import android.widget.PopupWindow;
 public class MotorPulseSelectWindow extends PopupWindow {
 
 
-    private Button btn_p1,btn_p2,btn_cancel;
+    private Button btn_p1,btn_p2,btn_p1_modify,btn_p2_modify,btn_cancel;
 
     private View mMenuView;
 
@@ -27,11 +27,15 @@ public class MotorPulseSelectWindow extends PopupWindow {
         mMenuView = inflater.inflate(R.layout.activity_motor_pulse_select_window,null);
         btn_p1 = (Button) mMenuView.findViewById(R.id.motorPulse1);
         btn_p2 = (Button) mMenuView.findViewById(R.id.motorPulse2);
+        btn_p1_modify = (Button) mMenuView.findViewById(R.id.motorPulse1Modify);
+        btn_p2_modify = (Button) mMenuView.findViewById(R.id.motorPulse2Modify);
         btn_cancel = (Button) mMenuView.findViewById(R.id.cancel);
 
         btn_cancel.setOnClickListener(itemsOnClick);
         btn_p1.setOnClickListener(itemsOnClick);
         btn_p2.setOnClickListener(itemsOnClick);
+        btn_p1_modify.setOnClickListener(itemsOnClick);
+        btn_p2_modify.setOnClickListener(itemsOnClick);
 
         this.setContentView(mMenuView);
         this.setWidth(ViewGroup.LayoutParams.FILL_PARENT);

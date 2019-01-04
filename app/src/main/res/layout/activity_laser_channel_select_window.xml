@@ -13,27 +13,58 @@
         android:layout_alignParentBottom="true"
         android:background="@drawable/border">
 
-
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
         <Button
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
+            android:layout_weight="4"
             android:id="@+id/laserChannel1"
             android:text="@string/laser_channel1"
             android:background="@drawable/button_vary"
             android:textStyle="bold"/>
         <Button
-            android:layout_width="fill_parent"
+            android:id="@+id/laserChannel1Modify"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_vary"
+            android:text="..."
+            android:textStyle="bold"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="20dp"
+            android:layout_weight="4"
             android:id="@+id/laserChannel2"
             android:text="@string/laser_channel2"
             android:background="@drawable/button_vary"
             android:textStyle="bold"/>
+        <Button
+            android:id="@+id/laserChannel2Modify"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_vary"
+            android:text="..."
+            android:textStyle="bold"/>
+    </LinearLayout>
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

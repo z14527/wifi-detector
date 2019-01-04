@@ -47,6 +47,9 @@ public class SettingActivity extends AppCompatActivity {
         wifi_name = (EditText)findViewById(R.id.wifi_name);
         wifi_pwd = (EditText)findViewById(R.id.wifi_pwd);
         wifi_port = (EditText)findViewById(R.id.port);
+        wifi_name.setText(pref.getString("wifi_name",""));
+        wifi_pwd.setText(pref.getString("wifi_pwd",""));
+        wifi_port.setText(pref.getString("wifi_port",""));
         pattern.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 selectWindow = new SelectWindow(SettingActivity.this,itemsOnClick);

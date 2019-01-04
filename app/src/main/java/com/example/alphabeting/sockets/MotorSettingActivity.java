@@ -1,8 +1,11 @@
 package com.example.alphabeting.sockets;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
@@ -11,6 +14,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
@@ -41,6 +45,7 @@ public class MotorSettingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.motor_setting);
+        pref = PreferenceManager.getDefaultSharedPreferences(this);
         WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(dm);
@@ -183,80 +188,141 @@ public class MotorSettingActivity extends AppCompatActivity {
     }
     private  View.OnClickListener itemsOnClick = new View.OnClickListener(){
         public  void  onClick(View v){
-            if(motorSelectWindow!=null)
-                motorSelectWindow.dismiss();
-            if(motorSpeedSelectWindow!=null)
-                motorSpeedSelectWindow.dismiss();
-            if(motorDirectionSelectWindow!=null)
-                motorDirectionSelectWindow.dismiss();
-            if(motorPulseSelectWindow!=null)
-                motorPulseSelectWindow.dismiss();
-            if(laserChannelSelectWindow!=null)
-                laserChannelSelectWindow.dismiss();
-            if(valvePositionSelectWindow!=null)
-                valvePositionSelectWindow.dismiss();
             switch(v.getId()){
                 case R.id.motorOK:
-                    motor_pattern = getString(R.string.motor_OK);
-                    Toast.makeText(getApplicationContext(), "你点了 "+motor_pattern, Toast.LENGTH_SHORT).show();
+                    motor_pattern = pref.getString("motor_OK","");
+                    editor = pref.edit();
+                    editor.putString("motor_pattern",motor_pattern);
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), "你选择了 "+motor_pattern, Toast.LENGTH_SHORT).show();
+                    dismissWindow();
                     break;
                 case R.id.motorClose:
-                    motor_pattern = getString(R.string.motor_Close);
-                    Toast.makeText(getApplicationContext(), "你点了 "+motor_pattern, Toast.LENGTH_SHORT).show();
+                    motor_pattern = pref.getString("motor_Close","");
+                    editor = pref.edit();
+                    editor.putString("motor_pattern",motor_pattern);
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), "你选择了 "+motor_pattern, Toast.LENGTH_SHORT).show();
+                    dismissWindow();
                     break;
                 case R.id.motorDirection1:
-                    motor_direction = getString(R.string.motor_direction1);
-                    Toast.makeText(getApplicationContext(), "你点了 "+motor_direction, Toast.LENGTH_SHORT).show();
+                    motor_direction = pref.getString("motor_direction1","");
+                    editor = pref.edit();
+                    editor.putString("motor_direction",motor_direction);
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), "你选择了 "+motor_direction, Toast.LENGTH_SHORT).show();
+                    dismissWindow();
                     break;
                 case R.id.motorDirection2:
-                    motor_direction = getString(R.string.motor_direction2);
-                    Toast.makeText(getApplicationContext(), "你点了 "+motor_direction, Toast.LENGTH_SHORT).show();
+                    motor_direction = pref.getString("motor_direction2","");
+                    editor = pref.edit();
+                    editor.putString("motor_direction",motor_direction);
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), "你选择了 "+motor_direction, Toast.LENGTH_SHORT).show();
+                    dismissWindow();
                     break;
                 case R.id.motorSpeed1:
-                    motor_speed = getString(R.string.motor_speed1);
-                    Toast.makeText(getApplicationContext(), "你点了 "+motor_speed, Toast.LENGTH_SHORT).show();
+                    motor_speed = pref.getString("motor_speed1","");
+                    editor = pref.edit();
+                    editor.putString("motor_speed",motor_speed);
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), "你选择了 "+motor_speed, Toast.LENGTH_SHORT).show();
+                    dismissWindow();
                     break;
                 case R.id.motorSpeed2:
-                    motor_speed = getString(R.string.motor_speed2);
-                    Toast.makeText(getApplicationContext(), "你点了  "+motor_speed, Toast.LENGTH_SHORT).show();
+                    motor_speed = pref.getString("motor_speed2","");
+                    editor = pref.edit();
+                    editor.putString("motor_speed",motor_speed);
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), "你选择了  "+motor_speed, Toast.LENGTH_SHORT).show();
+                    dismissWindow();
                     break;
                 case R.id.motorPulse1:
-                    motor_pulse = getString(R.string.motor_pulse1);
-                    Toast.makeText(getApplicationContext(), "你点了 "+motor_pulse, Toast.LENGTH_SHORT).show();
+                    motor_pulse = pref.getString("motor_pulse1","");
+                    editor = pref.edit();
+                    editor.putString("motor_pulse",motor_pulse);
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), "你选择了 "+motor_pulse, Toast.LENGTH_SHORT).show();
+                    dismissWindow();
                     break;
                 case R.id.motorPulse2:
-                    motor_pulse = getString(R.string.motor_pulse2);
-                    Toast.makeText(getApplicationContext(), "你点了 "+motor_pulse, Toast.LENGTH_SHORT).show();
+                    motor_pulse = pref.getString("motor_pulse2","");
+                    editor = pref.edit();
+                    editor.putString("motor_pulse",motor_pulse);
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), "你选择了 "+motor_pulse, Toast.LENGTH_SHORT).show();
+                    dismissWindow();
                     break;
                 case R.id.laserChannel1:
-                    laser_channel = getString(R.string.laser_channel1);
-                    Toast.makeText(getApplicationContext(), "你点了 "+laser_channel, Toast.LENGTH_SHORT).show();
+                    laser_channel = pref.getString("laser_channel1","");
+                    editor = pref.edit();
+                    editor.putString("laser_channel",laser_channel);
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), "你选择了 "+laser_channel, Toast.LENGTH_SHORT).show();
+                    dismissWindow();
                     break;
                 case R.id.laserChannel2:
-                    laser_channel = getString(R.string.laser_channel2);
-                    Toast.makeText(getApplicationContext(), "你点了 "+laser_channel, Toast.LENGTH_SHORT).show();
+                    laser_channel = pref.getString("laser_channel2","");
+                    editor = pref.edit();
+                    editor.putString("laser_channel",laser_channel);
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), "你选择了 "+laser_channel, Toast.LENGTH_SHORT).show();
+                    dismissWindow();
                     break;
                 case R.id.valvePosition1:
-                    valve_pos = getString(R.string.valve_position1);
-                    Toast.makeText(getApplicationContext(), "你点了 "+valve_pos, Toast.LENGTH_SHORT).show();
+                    valve_pos = pref.getString("valve_position1","");
+                    editor = pref.edit();
+                    editor.putString("valve_pos",valve_pos);
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), "你选择了 "+valve_pos, Toast.LENGTH_SHORT).show();
+                    dismissWindow();
                     break;
                 case R.id.valvePosition2:
-                    valve_pos = getString(R.string.valve_position2);
-                    Toast.makeText(getApplicationContext(), "你点了 "+valve_pos, Toast.LENGTH_SHORT).show();
+                    valve_pos = pref.getString("valve_position2","");
+                    editor = pref.edit();
+                    editor.putString("valve_pos",valve_pos);
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), "你选择了 "+valve_pos, Toast.LENGTH_SHORT).show();
+                    dismissWindow();
+                    break;
+                case R.id.motorOKModify:
+                    setPara("motor_OK");
+                    break;
+                case R.id.motorCloseModify:
+                    setPara("motor_Close");
+                    break;
+                case R.id.motorSpeed1Modify:
+                    setPara("motor_speed1");
+                    break;
+                case R.id.motorSpeed2Modify:
+                    setPara("motor_speed2");
+                    break;
+                case R.id.motorDirection1Modify:
+                    setPara("motor_direction1");
+                    break;
+                case R.id.motorDirection2Modify:
+                    setPara("motor_direction2");
+                    break;
+                case R.id.motorPulse1Modify:
+                    setPara("motor_pulse1");
+                    break;
+                case R.id.motorPulse2Modify:
+                    setPara("motor_pulse2");
+                    break;
+                case R.id.laserChannel1Modify:
+                    setPara("laser_channel1");
+                    break;
+                case R.id.laserChannel2Modify:
+                    setPara("laser_channel2");
+                    break;
+                case R.id.valvePosition1Modify:
+                    setPara("valve_position1");
+                    break;
+                case R.id.valvePosition2Modify:
+                    setPara("valve_position2");
                     break;
                 case R.id.cancel:
-                    if(motorSelectWindow!=null)
-                        motorSelectWindow.dismiss();
-                    if(motorSpeedSelectWindow!=null)
-                        motorSpeedSelectWindow.dismiss();
-                    if(motorDirectionSelectWindow!=null)
-                        motorDirectionSelectWindow.dismiss();
-                    if(motorPulseSelectWindow!=null)
-                        motorPulseSelectWindow.dismiss();
-                    if(laserChannelSelectWindow!=null)
-                        laserChannelSelectWindow.dismiss();
-                    if(valvePositionSelectWindow!=null)
-                        valvePositionSelectWindow.dismiss();
+                    dismissWindow();
                     break;
                 default:
                     break;
@@ -269,5 +335,45 @@ public class MotorSettingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setTitle(R.string.device_setting);
     }
-
+    private void setPara(final String para_name){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MotorSettingActivity.this);
+        builder.setTitle("请输入 "+getString(getResources().getIdentifier(para_name,"string",getPackageName()))+" 参数值：");    //设置对话框标题
+        builder.setIcon(android.R.drawable.btn_star);   //设置对话框标题前的图标
+        final EditText edit = new EditText(MotorSettingActivity.this);
+        edit.setText(pref.getString(para_name,""));
+        builder.setView(edit);
+        builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String data1 = edit.getText().toString();
+                editor = pref.edit();
+                editor.putString(para_name,data1);
+                editor.commit();
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(MotorSettingActivity.this, "你选择了取消", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setCancelable(true);    //设置按钮是否可以按返回键取消,false则不可以取消
+        AlertDialog dialog = builder.create();  //创建对话框
+        dialog.setCanceledOnTouchOutside(true); //设置弹出框失去焦点是否隐藏,即点击屏蔽其它地方是否隐藏
+        dialog.show();
+    }
+    private void dismissWindow(){
+        if(motorSelectWindow!=null)
+            motorSelectWindow.dismiss();
+        if(motorSpeedSelectWindow!=null)
+            motorSpeedSelectWindow.dismiss();
+        if(motorDirectionSelectWindow!=null)
+            motorDirectionSelectWindow.dismiss();
+        if(motorPulseSelectWindow!=null)
+            motorPulseSelectWindow.dismiss();
+        if(laserChannelSelectWindow!=null)
+            laserChannelSelectWindow.dismiss();
+        if(valvePositionSelectWindow!=null)
+            valvePositionSelectWindow.dismiss();
+    }
 }
