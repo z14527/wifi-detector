@@ -27,11 +27,11 @@ public class SettingActivity extends AppCompatActivity {
 
     private SelectWindow selectWindow;
 
-    private EditText wifi_name,wifi_pwd,wifi_port;
+    private EditText wifi_name,wifi_pwd,wifi_ip,wifi_port;
 
     static boolean dataStore = false;
 
-    static String patterns="",wifiName="",wifiPwd="",wifiPort="";
+    static String patterns="",wifiName="",wifiIp="",wifiPwd="",wifiPort="";
 
 
     @Override
@@ -44,9 +44,11 @@ public class SettingActivity extends AppCompatActivity {
         final TableLayout about = (TableLayout) this.findViewById(R.id.about);
         wifi_name = (EditText)findViewById(R.id.wifi_name);
         wifi_pwd = (EditText)findViewById(R.id.wifi_pwd);
+        wifi_ip = (EditText)findViewById(R.id.wifi_ip);
         wifi_port = (EditText)findViewById(R.id.port);
         wifi_name.setText(pref.getString("wifi_name",""));
         wifi_pwd.setText(pref.getString("wifi_pwd",""));
+        wifi_ip.setText(pref.getString("wifi_ip",""));
         wifi_port.setText(pref.getString("wifi_port",""));
         pattern.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -80,9 +82,11 @@ public class SettingActivity extends AppCompatActivity {
         if(dataStore){
             wifiName = pref.getString("wifi_name","");
             wifiPwd = pref.getString("wifi_pwd","");
+            wifiIp = pref.getString("wifi_ip","");
             wifiPort = pref.getString("wifi_port","");
             wifi_name.setText(wifiName);
             wifi_pwd.setText(wifiPwd);
+            wifi_ip.setText(wifiIp);
             wifi_port.setText(wifiPort);
         }
     }
@@ -92,19 +96,24 @@ public class SettingActivity extends AppCompatActivity {
 
         wifi_name = (EditText)findViewById(R.id.wifi_name);
         wifi_pwd = (EditText)findViewById(R.id.wifi_pwd);
+        wifi_ip = (EditText)findViewById(R.id.wifi_ip);
         wifi_port = (EditText)findViewById(R.id.port);
         wifiName = wifi_name.getText().toString();
         wifiPwd = wifi_pwd.getText().toString();
+        wifiIp = wifi_ip.getText().toString();
         wifiPort = wifi_port.getText().toString();
         Intent intent = new Intent();
         intent.putExtra("wifi_name",wifiName);
         intent.putExtra("wifi_pwd",wifiPwd);
+        intent.putExtra("wifi_ip",wifiIp);
         intent.putExtra("wifi_port",wifiPort);
+        intent.putExtra("patterns",patterns);
         setResult(RESULT_OK,intent);
 
         editor = pref.edit();
         editor.putString("wifi_name",wifiName);
         editor.putString("wifi_pwd",wifiPwd);
+        editor.putString("wifi_ip",wifiIp);
         editor.putString("wifi_port",wifiPort);
         editor.putString("patterns",patterns);
         editor.commit();

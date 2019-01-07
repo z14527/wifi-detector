@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
+import android.net.DhcpInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -45,10 +46,14 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
@@ -93,8 +98,8 @@ public class MainActivity extends AppCompatActivity {
     private Button send, clean_1, clean_2;
 
     private SharedPreferences pref;
-    static String ip="", patterns="";
-    static String wifi_name="",wifi_pwd="",wifi_port="",motor_pattern="",motor_speed="",motor_pulse="",
+    static String patterns="";
+    static String wifi_name="",wifi_pwd="",wifi_port="",wifi_ip="",motor_pattern="",motor_speed="",motor_pulse="",
             motor_direction="",laser_channel="",valve_pos="";
     static int port_num=0;
     final WifiAdminUtils mWifiAdmin = null;
@@ -138,8 +143,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String sendtext = sendText.getText().toString();
                 Receiver.append("通信模式：" + patterns + "\n");
-                Receiver.append("目标IP：" + ip + "\n");
+                Receiver.append("目标IP：" + wifi_ip + "\n");
                 Receiver.append("目标端口：" + port_num + "\n");
+          //      Toast.makeText(getApplicationContext(), Receiver.getText().toString(), Toast.LENGTH_LONG).show();
                 new MyThread(sendtext).start();
             }
 
@@ -157,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
         valve_pos = pref.getString("valve_pos","");
         wifi_name = pref.getString("wifi_name","");
         wifi_pwd = pref.getString("wifi_pwd","");
+        wifi_ip = pref.getString("wifi_ip","");
         wifi_port = pref.getString("wifi_port","");
 
         ImageButton infoBtn = (ImageButton) findViewById(R.id.info);
@@ -177,7 +184,9 @@ public class MainActivity extends AppCompatActivity {
                 tv.setTextColor(Color.RED);
                 String info="Wifi名称："+wifi_name+
                         "\nWifi密码："+wifi_pwd+
+                        "\nWifi IP："+wifi_ip+
                         "\nWifi端口："+wifi_port+
+                        "\n通信方式："+patterns+
                         "\n\n步进电机工作状态："+motor_pattern+
                         "\n步进速度："+motor_speed+
                         "\n步进脉冲："+motor_pulse+
@@ -205,14 +214,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 WifiC wifiC = new WifiC();
                 wifiC.dowifi(MainActivity.this);
-                while(!wifiC.isGetIp){
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-
-                    }
-                }
-                ip = wifiC.ip;
             }
         });
         getBtn.setOnClickListener(new View.OnClickListener() {
@@ -348,10 +349,10 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     wifi_name = data.getStringExtra("wifi_name");
                     wifi_pwd = data.getStringExtra("wifi_pwd");
+                    wifi_ip = data.getStringExtra("wifi_ip");
                     wifi_port = data.getStringExtra("wifi_port");
-                    String pattern = data.getStringExtra("pattern");
+                    patterns = data.getStringExtra("patterns");
                 //    port_num = Integer.parseInt(port);
-                    patterns = pattern;
                     //获取wifi服务
 
                 }
@@ -380,7 +381,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            if(ip=="" || wifi_port=="")
+            if(wifi_ip=="" || wifi_port=="")
                 return;
             try{
                 port_num = Integer.parseInt(wifi_port);
@@ -397,7 +398,7 @@ public class MainActivity extends AppCompatActivity {
             if (patterns.equals("TCP")) {
                 try {
                     socket = new Socket();
-                    socket.connect(new InetSocketAddress(ip, port_num), 10000);
+                    socket.connect(new InetSocketAddress(wifi_ip, port_num), 10000);
                     OutputStream writer = socket.getOutputStream();
                     writer.write(text.getBytes("UTF-8"));
                     writer.flush();
@@ -425,7 +426,7 @@ public class MainActivity extends AppCompatActivity {
                         socket2.setReuseAddress(true);
                         socket2.bind(new InetSocketAddress(port_num));
                     }
-                    InetAddress serverAddress = InetAddress.getByName(ip);
+                    InetAddress serverAddress = InetAddress.getByName(wifi_ip);
                     byte output_data[] = text.getBytes();
                     DatagramPacket outputPacket = new DatagramPacket(output_data, output_data.length, serverAddress, port_num);
                     socket2.send(outputPacket);
@@ -700,21 +701,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if(connect_ok) {
-            Toast.makeText(context, "连接成功", Toast.LENGTH_LONG).show();
-            WifiManager wifiManager =(WifiManager)context.getSystemService(WIFI_SERVICE);
-            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            int ipAddress = wifiInfo.getIpAddress();
-            ip = (ipAddress & 0xFF ) + "." +
-                        ((ipAddress >> 8 ) & 0xFF) + "." +
-                        ((ipAddress >> 16 ) & 0xFF) + "." +
-                        ( ipAddress >> 24 & 0xFF) ;
+            Toast.makeText(context, "连接成功\n", Toast.LENGTH_LONG).show();
         }
         else
             Toast.makeText(context, "连接失败", Toast.LENGTH_LONG).show();
-        isGetIp = true;
+//        isGetIp = true;
     }
 
-    /**
+      /**
      * 初始化数据
      */
     private void initData() {
