@@ -1,4 +1,4 @@
-package com.example.alphabeting.sockets;
+package com.test.gyq.detector;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,24 +14,28 @@ import android.widget.PopupWindow;
  * Created by alphabeting timer on 2016/10/5.
  */
 
-public class SelectWindow extends PopupWindow {
+public class MotorPulseSelectWindow extends PopupWindow {
 
 
-    private Button btn_udp,btn_tcp,btn_cancel;
+    private Button btn_p1,btn_p2,btn_p1_modify,btn_p2_modify,btn_cancel;
 
     private View mMenuView;
 
-    public SelectWindow(Activity context, View.OnClickListener itemsOnClick){
+    public MotorPulseSelectWindow(Activity context, View.OnClickListener itemsOnClick){
         super(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mMenuView = inflater.inflate(R.layout.pattern,null);
-        btn_udp = (Button) mMenuView.findViewById(R.id.UDP);
-        btn_tcp = (Button) mMenuView.findViewById(R.id.TCP);
+        mMenuView = inflater.inflate(R.layout.activity_motor_pulse_select_window,null);
+        btn_p1 = (Button) mMenuView.findViewById(R.id.motorPulse1);
+        btn_p2 = (Button) mMenuView.findViewById(R.id.motorPulse2);
+        btn_p1_modify = (Button) mMenuView.findViewById(R.id.motorPulse1Modify);
+        btn_p2_modify = (Button) mMenuView.findViewById(R.id.motorPulse2Modify);
         btn_cancel = (Button) mMenuView.findViewById(R.id.cancel);
 
         btn_cancel.setOnClickListener(itemsOnClick);
-        btn_tcp.setOnClickListener(itemsOnClick);
-        btn_udp.setOnClickListener(itemsOnClick);
+        btn_p1.setOnClickListener(itemsOnClick);
+        btn_p2.setOnClickListener(itemsOnClick);
+        btn_p1_modify.setOnClickListener(itemsOnClick);
+        btn_p2_modify.setOnClickListener(itemsOnClick);
 
         this.setContentView(mMenuView);
         this.setWidth(ViewGroup.LayoutParams.FILL_PARENT);

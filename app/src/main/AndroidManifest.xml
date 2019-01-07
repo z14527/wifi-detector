@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.alphabeting.sockets">
+    package="com.test.gyq.detector">
 
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.test.gyq.detector.MainActivity"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingActivity"
+            android:name="com.test.gyq.detector.SettingActivity"
             android:theme="@style/SettingTheme">
             <intent-filter>
                 <action android:name="com.example.alphabeting.sockets.ACTION_START" />
@@ -33,14 +33,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".MotorSettingActivity" 
+        <activity android:name="com.test.gyq.detector.MotorSettingActivity"
 		android:theme="@style/SettingTheme"/>
-        <activity android:name=".MotorSelectWindow" />
-        <activity android:name=".MotorSpeedSelectWindow" />
-        <activity android:name=".MotorDirectionSelectWindow" />
-        <activity android:name=".MotorPulseSelectWindow" />
-        <activity android:name=".LaserChannelSelectWindow" />
-        <activity android:name=".ValvePositionSelectWindow"></activity>
+        <activity android:name="com.test.gyq.detector.MotorSelectWindow" />
+        <activity android:name="com.test.gyq.detector.MotorSpeedSelectWindow" />
+        <activity android:name="com.test.gyq.detector.MotorDirectionSelectWindow" />
+        <activity android:name="com.test.gyq.detector.MotorPulseSelectWindow" />
+        <activity android:name="com.test.gyq.detector.LaserChannelSelectWindow" />
+        <activity android:name="com.test.gyq.detector.ValvePositionSelectWindow"></activity>
     </application>
 
 </manifest>

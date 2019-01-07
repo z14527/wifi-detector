@@ -1,4 +1,4 @@
-package com.example.alphabeting.sockets;
+package com.test.gyq.detector;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,8 +47,6 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
-
-import static android.app.Activity.RESULT_OK;
 
 public class MainActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.example.alphabeting.sockets;
+package com.test.gyq.detector;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -15,12 +15,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
-
-
-import static android.app.Activity.RESULT_OK;
 
 public class MotorSettingActivity extends AppCompatActivity {
 

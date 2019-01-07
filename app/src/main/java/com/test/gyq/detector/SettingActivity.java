@@ -1,4 +1,4 @@
-package com.example.alphabeting.sockets;
+package com.test.gyq.detector;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,8 +12,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TableLayout;
-
-import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by alphabeting on 2016/10/1.

@@ -1,4 +1,4 @@
-package com.example.alphabeting.sockets;
+package com.test.gyq.detector;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,28 +14,28 @@ import android.widget.PopupWindow;
  * Created by alphabeting timer on 2016/10/5.
  */
 
-public class LaserChannelSelectWindow extends PopupWindow {
+public class MotorSelectWindow extends PopupWindow {
 
 
-    private Button btn_ch1,btn_ch2,btn_ch1_modify,btn_ch2_modify,btn_cancel;
+    private Button btn_ok,btn_close,btn_ok_modify,btn_close_modify,btn_cancel;
 
     private View mMenuView;
 
-    public LaserChannelSelectWindow(Activity context, View.OnClickListener itemsOnClick){
+    public MotorSelectWindow(Activity context, View.OnClickListener itemsOnClick){
         super(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mMenuView = inflater.inflate(R.layout.activity_laser_channel_select_window,null);
-        btn_ch1 = (Button) mMenuView.findViewById(R.id.laserChannel1);
-        btn_ch2 = (Button) mMenuView.findViewById(R.id.laserChannel2);
-        btn_ch1_modify = (Button) mMenuView.findViewById(R.id.laserChannel1Modify);
-        btn_ch2_modify = (Button) mMenuView.findViewById(R.id.laserChannel2Modify);
+        mMenuView = inflater.inflate(R.layout.pattern_motor,null);
+        btn_ok = (Button) mMenuView.findViewById(R.id.motorOK);
+        btn_close = (Button) mMenuView.findViewById(R.id.motorClose);
         btn_cancel = (Button) mMenuView.findViewById(R.id.cancel);
+        btn_ok_modify = (Button) mMenuView.findViewById(R.id.motorOKModify);
+        btn_close_modify = (Button) mMenuView.findViewById(R.id.motorCloseModify);
 
         btn_cancel.setOnClickListener(itemsOnClick);
-        btn_ch1.setOnClickListener(itemsOnClick);
-        btn_ch2.setOnClickListener(itemsOnClick);
-        btn_ch1_modify.setOnClickListener(itemsOnClick);
-        btn_ch2_modify.setOnClickListener(itemsOnClick);
+        btn_ok.setOnClickListener(itemsOnClick);
+        btn_close.setOnClickListener(itemsOnClick);
+        btn_ok_modify.setOnClickListener(itemsOnClick);
+        btn_close_modify.setOnClickListener(itemsOnClick);
 
         this.setContentView(mMenuView);
         this.setWidth(ViewGroup.LayoutParams.FILL_PARENT);

@@ -1,4 +1,4 @@
-package com.example.alphabeting.sockets;
+package com.test.gyq.detector;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
