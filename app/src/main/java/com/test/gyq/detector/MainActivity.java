@@ -1,19 +1,30 @@
 package com.test.gyq.detector;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,9 +32,15 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -37,6 +54,9 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import gyq.wifixiaofang.ui.adapter.MyListViewAdapter;
+import gyq.wifixiaofang.ui.api.OnNetworkChangeListener;
+import gyq.wifixiaofang.ui.component.MyListView;
 import lecho.lib.hellocharts.gesture.ContainerScrollType;
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Axis;
@@ -47,6 +67,11 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
+
+import gyq.wifixiaofang.utils.*;
+import gyq.wifixiaofang.ui.*;
+
+import static android.content.Context.WIFI_SERVICE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
     static String wifi_name="",wifi_pwd="",wifi_port="",motor_pattern="",motor_speed="",motor_pulse="",
             motor_direction="",laser_channel="",valve_pos="";
     static int port_num=0;
+    final WifiAdminUtils mWifiAdmin = null;
 
     public Handler myHandler = new Handler() {
         @Override
@@ -172,7 +198,21 @@ public class MainActivity extends AppCompatActivity {
                 AlertDialog dialog = builder.create();  //创建对话框
                 dialog.setCanceledOnTouchOutside(true); //设置弹出框失去焦点是否隐藏,即点击屏蔽其它地方是否隐藏
                 dialog.show();
-                //Toast.makeText(MainActivity.this, info, Toast.LENGTH_LONG).show();
+                //Toast.makeText(WifiActivity.this, info, Toast.LENGTH_LONG).show();
+            }
+        });
+        wifiBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                WifiC wifiC = new WifiC();
+                wifiC.dowifi(MainActivity.this);
+                while(!wifiC.isGetIp){
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+                ip = wifiC.ip;
             }
         });
         getBtn.setOnClickListener(new View.OnClickListener() {
@@ -312,6 +352,8 @@ public class MainActivity extends AppCompatActivity {
                     String pattern = data.getStringExtra("pattern");
                 //    port_num = Integer.parseInt(port);
                     patterns = pattern;
+                    //获取wifi服务
+
                 }
                 break;
             case 2:
@@ -338,6 +380,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void run() {
+            if(ip=="" || wifi_port=="")
+                return;
+            try{
+                port_num = Integer.parseInt(wifi_port);
+            }catch(NumberFormatException e)
+            {
+                Toast.makeText(getApplicationContext(), "通信端口出错", Toast.LENGTH_LONG).show();
+                return;
+            }
+
             Message msg = new Message();
             msg.what = 0x11;
             Bundle bundle = new Bundle();
@@ -410,3 +462,279 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 
+ class WifiC{
+
+    protected static final String TAG = "MainActivity";
+
+    private static final int REFRESH_CONN = 100;
+    // Wifi管理类
+    private WifiAdminUtils mWifiAdmin;
+    // 扫描结果列表
+    private List<ScanResult> list = new ArrayList<ScanResult>();
+    // 显示列表
+    private MyListView listView;
+
+    private MyListViewAdapter mAdapter;
+    //下标
+    private int mPosition;
+
+    private Context context;
+
+    public String ip = "";
+
+    public boolean isGetIp = false;
+
+    private OnNetworkChangeListener mOnNetworkChangeListener = new OnNetworkChangeListener() {
+
+        @Override
+        public void onNetWorkDisConnect() {
+            getWifiListInfo();
+            mAdapter.setDatas(list);
+            mAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onNetWorkConnect() {
+            getWifiListInfo();
+            mAdapter.setDatas(list);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            mAdapter.notifyDataSetChanged();
+        }
+    };
+    public void msg(String text){
+        AlertDialog.Builder  builder=new AlertDialog.Builder(context);
+        builder.setTitle("提示");
+        builder.setIcon(R.drawable.abc_btn_radio_to_on_mtrl_000);
+        builder.setMessage(text);
+
+        //为builder对象添加确定按钮，不过这里嵌套了一个函数
+        builder.setPositiveButton("确定",new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface arg0,int arg1)
+                    {
+                        //android.os.Process.killProcess(android.os.Process.myPid());
+                        //        finish();
+                    }
+                }
+        );
+        //builder创建对话框对象AlertDialog
+        AlertDialog simpledialog=builder.create();
+        simpledialog.show();
+
+
+    }
+
+    public void execCommand(String command) throws IOException {
+        // start the ls command running
+        //String[] args =  new String[]{"sh", "-c", command};
+        Runtime runtime = Runtime.getRuntime();
+        Process proc = runtime.exec(command);        //这句话就是shell与高级语言间的调用
+        //如果有参数的话可以用另外一个被重载的exec方法
+        //实际上这样执行时启动了一个子进程,它没有父进程的控制台
+        //也就看不到输出,所以我们需要用输出流来得到shell执行后的输出
+        InputStream inputstream = proc.getInputStream();
+        InputStreamReader inputstreamreader = new InputStreamReader(inputstream);
+        BufferedReader bufferedreader = new BufferedReader(inputstreamreader);
+        // read the ls output
+        String line = "";
+        StringBuilder sb = new StringBuilder(line);
+        while ((line = bufferedreader.readLine()) != null) {
+            //System.out.println(line);
+            sb.append(line);
+            sb.append('\n');
+        }
+        //tv.setText(sb.toString());
+        //使用exec执行不会等执行成功以后才返回,它会立即返回
+        //所以在某些情况下是很要命的(比如复制文件的时候)
+        //使用wairFor()可以等待命令执行完成以后才返回
+        try {
+            if (proc.waitFor() != 0) {
+                System.err.println("exit value = " + proc.exitValue());
+            }
+        }
+        catch (InterruptedException e) {
+            System.err.println(e);
+        }
+    }
+
+    public void setMobileDataStatus(Context context,boolean enabled) throws InvocationTargetException
+    {
+        Method dataConnSwitchmethod = null;
+        Class telephonyManagerClass = null;
+        Object ITelephonyStub = null;
+        Class ITelephonyClass = null;
+
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+
+//        if(telephonyManager.getDataState() == TelephonyManager.DATA_CONNECTED){
+//            isEnabled = true;
+//        }else{
+//            isEnabled = false;
+//        }
+
+        try {
+            telephonyManagerClass = Class.forName(telephonyManager.getClass().getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        Method getITelephonyMethod = null;
+        try {
+            getITelephonyMethod = telephonyManagerClass.getDeclaredMethod("getITelephony");
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        getITelephonyMethod.setAccessible(true);
+        try {
+            ITelephonyStub = getITelephonyMethod.invoke(telephonyManager);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        try {
+            ITelephonyClass = Class.forName(ITelephonyStub.getClass().getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (!enabled) {
+            try {
+                dataConnSwitchmethod = ITelephonyClass.getDeclaredMethod("disableDataConnectivity");
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                dataConnSwitchmethod = ITelephonyClass.getDeclaredMethod("enableDataConnectivity");
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        }
+        dataConnSwitchmethod.setAccessible(true);
+        try {
+            dataConnSwitchmethod.invoke(ITelephonyStub);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setMobileDataEnabled(Context context, boolean enabled){
+        final ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        Class cmClass = null;
+        try {
+            cmClass = Class.forName(cm.getClass().getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        Field iConnectivityManagerField = null;
+        try {
+            iConnectivityManagerField = cmClass.getDeclaredField("mService");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        iConnectivityManagerField.setAccessible(true);
+        Object iConnectivityManager = null;
+        try {
+            iConnectivityManager = iConnectivityManagerField.get(cm);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        Class iConnectivityManagerClass = null;
+        try {
+            iConnectivityManagerClass = Class.forName(iConnectivityManager.getClass().getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        Method setMobileDataEnabledMethod = null;
+        try {
+            setMobileDataEnabledMethod = iConnectivityManagerClass.getDeclaredMethod("setMobileDataEnabled",Boolean.TYPE );
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        setMobileDataEnabledMethod.setAccessible(true);
+        try {
+            setMobileDataEnabledMethod.invoke(iConnectivityManager, enabled);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+    public void dowifi(Context context1) {
+        context = context1;
+        initData();
+        while(!mWifiAdmin.openWifi()){
+            //      while (mWifiAdmin.checkState() != WifiManager.WIFI_STATE_ENABLING) {
+            try {
+                // 为了避免程序一直while循环，让它睡个100毫秒在检测……
+                Thread.currentThread();
+                Thread.sleep(100);
+                //           mWifiAdmin.openWifi();
+            } catch (InterruptedException ie) {
+                Toast.makeText(context, "打开WIFI出错", Toast.LENGTH_LONG).show();
+            }
+        }
+        if(mWifiAdmin.getBSSID().indexOf("ESP8266") <= 0)
+            mWifiAdmin.disConnectionWifi(mWifiAdmin.getConnNetId());
+        int i= 20;
+        boolean connect_ok = false;
+        while(i > 0){
+            //      while (mWifiAdmin.checkState() != WifiManager.WIFI_STATE_ENABLING) {
+            try {
+                // 为了避免程序一直while循环，让它睡个100毫秒在检测……
+                Thread.currentThread();
+                Thread.sleep(100);
+                if(mWifiAdmin.connect("ESP8266","0123456789",
+                        WifiConnectUtils.WifiCipherType.WIFICIPHER_WPA)){
+                    connect_ok = true;
+                    break;
+                }
+                else
+                    i = i - 1;;
+                //           mWifiAdmin.openWifi();
+            } catch (InterruptedException ie) {
+                Toast.makeText(context, "连接ESP WIFI出错", Toast.LENGTH_LONG).show();
+            }
+        }
+        if(connect_ok) {
+            Toast.makeText(context, "连接成功", Toast.LENGTH_LONG).show();
+            WifiManager wifiManager =(WifiManager)context.getSystemService(WIFI_SERVICE);
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            int ipAddress = wifiInfo.getIpAddress();
+            ip = (ipAddress & 0xFF ) + "." +
+                        ((ipAddress >> 8 ) & 0xFF) + "." +
+                        ((ipAddress >> 16 ) & 0xFF) + "." +
+                        ( ipAddress >> 24 & 0xFF) ;
+        }
+        else
+            Toast.makeText(context, "连接失败", Toast.LENGTH_LONG).show();
+        isGetIp = true;
+    }
+
+    /**
+     * 初始化数据
+     */
+    private void initData() {
+        mWifiAdmin = new WifiAdminUtils(context);
+        // 获得Wifi列表信息
+        getWifiListInfo();
+    }
+
+
+    /**
+     * 得到wifi的列表信息
+     */
+    private void getWifiListInfo() {
+        Log.d(TAG, "getWifiListInfo");
+        mWifiAdmin.startScan();
+        List<ScanResult> tmpList = mWifiAdmin.getWifiList();
+        if (tmpList == null) {
+            list.clear();
+        } else {
+            list = tmpList;
+        }
+    }
+}
