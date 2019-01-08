@@ -87,11 +87,12 @@ public class MainActivity extends AppCompatActivity {
     private List<AxisValue> mAxisXValues = new ArrayList<AxisValue>();
     private Timer timer = null;
     private static boolean isDoing = false;
-    Socket socket;
+    static Socket socket;
+    static Context context;
 
-    DatagramSocket socket2;
+    static DatagramSocket socket2;
 
-    private TextView Receiver;
+    private static TextView Receiver;
 
     private EditText sendText;
 
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
     static int port_num=0;
     final WifiAdminUtils mWifiAdmin = null;
 
-    public Handler myHandler = new Handler() {
+    public static Handler myHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == 0x11) {
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 if (bundle.getString("tip") == null) {
                     Receiver.append(bundle.getString("receive") + "\n");
                 } else
-                    Toast.makeText(MainActivity.this, bundle.getString("tip"), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, bundle.getString("tip"), Toast.LENGTH_LONG).show();
             }
         }
     };
@@ -121,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context = MainActivity.this;
         pref = PreferenceManager.getDefaultSharedPreferences(this);
 
         sendText = (EditText) findViewById(R.id.sendText);
@@ -371,7 +373,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class MyThread extends Thread {
+    static class MyThread extends Thread {
 
         private String text;
 
@@ -387,7 +389,7 @@ public class MainActivity extends AppCompatActivity {
                 port_num = Integer.parseInt(wifi_port);
             }catch(NumberFormatException e)
             {
-                Toast.makeText(getApplicationContext(), "通信端口出错", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "通信端口出错", Toast.LENGTH_LONG).show();
                 return;
             }
 

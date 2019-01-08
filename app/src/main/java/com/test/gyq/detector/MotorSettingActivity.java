@@ -48,16 +48,46 @@ public class MotorSettingActivity extends AppCompatActivity {
         int width = dm.widthPixels;         // 屏幕宽度（像素）
         Button doPusleBtn = (Button)findViewById(R.id.doPulse);
         doPusleBtn.setWidth(width/2);
+        doPusleBtn.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                new MainActivity.MyThread("@G").start();
+            }
+        });
         Button closePusleBtn = (Button)findViewById(R.id.closePulse);
         closePusleBtn.setWidth(width/2);
+        doPusleBtn.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                new MainActivity.MyThread("@T").start();
+            }
+        });
         Button openLaserBtn = (Button)findViewById(R.id.openLaser);
         openLaserBtn.setWidth(width/2);
+        openLaserBtn.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                new MainActivity.MyThread("@Z").start();
+            }
+        });
         Button closeLaserBtn = (Button)findViewById(R.id.closeLaser);
         closeLaserBtn.setWidth(width/2);
+        closeLaserBtn.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                new MainActivity.MyThread("@K").start();
+            }
+        });
         Button readADBtn = (Button)findViewById(R.id.readAD);
         readADBtn.setWidth(width/2);
+        readADBtn.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                new MainActivity.MyThread("@F").start();
+            }
+        });
         Button readIDBtn = (Button)findViewById(R.id.readID);
         readIDBtn.setWidth(width/2);
+        readIDBtn.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                new MainActivity.MyThread("@H").start();
+            }
+        });
         final TableRow motor_pattern = (TableRow) this.findViewById(R.id.patternMotor);
         motor_pattern.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -104,63 +134,17 @@ public class MotorSettingActivity extends AppCompatActivity {
         mToolbar.setNavigationOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-//                String ip1 = ip_1.getText().toString();
-//                String ip2 = ip_2.getText().toString();
-//                String ip3 = ip_3.getText().toString();
-//                String ip4 = ip_4.getText().toString();
-//                String ip = ip1+"."+ip2+"."+ip3+"."+ip4;
-//                String ports = port.getText().toString();
-//
-      //          Intent intent = new Intent();
-//                intent.putExtra("ip_adress",ip);
-//                intent.putExtra("port_num",ports);
-//                intent.putExtra("pattern",patterns);
-        //        setResult(RESULT_OK,intent);
-
-        //        editor = pref.edit();
-//                editor.putString("ip1",ip1);
-//                editor.putString("ip2",ip2);
-//                editor.putString("ip3",ip3);
-//                editor.putString("ip4",ip4);
-//                editor.putString("ports",ports);
-//                editor.putString("patterns",patterns);
-          //      editor.commit();
-            //    finish();
                 dataStore = true;
-
                 onBackPressed();
             }
         });
 
         if(dataStore){
-//            String ip11 = pref.getString("ip1","");
-//            String ip22 = pref.getString("ip2","");
-//            String ip33 = pref.getString("ip3","");
-//            String ip44 = pref.getString("ip4","");
-//            String portss = pref.getString("ports","");
-//            ip_1.setText(ip11);
-//            ip_2.setText(ip22);
-//            ip_3.setText(ip33);
-//            ip_4.setText(ip44);
-//            port.setText(portss);
         }
 
     }
     @Override
     public void onBackPressed(){
-
-//        ip_1 = (EditText)findViewById(R.id.ip_1);
-//        ip_2 = (EditText)findViewById(R.id.ip_2);
-//        ip_3 = (EditText)findViewById(R.id.ip_3);
-//        ip_4 = (EditText)findViewById(R.id.ip_4);
-//        port = (EditText)findViewById(R.id.port);
-//        String ip1 = ip_1.getText().toString();
-//        String ip2 = ip_2.getText().toString();
-//        String ip3 = ip_3.getText().toString();
-//        String ip4 = ip_4.getText().toString();
-//        String ip = ip1+"."+ip2+"."+ip3+"."+ip4;
-//        String ports = port.getText().toString();
-//
         Intent intent = new Intent();
         intent.putExtra("motor_pattern",motor_pattern);
         intent.putExtra("motor_speed",motor_speed);
@@ -169,18 +153,8 @@ public class MotorSettingActivity extends AppCompatActivity {
         intent.putExtra("laser_channel",laser_channel);
         intent.putExtra("valve_pos",valve_pos);
         setResult(RESULT_OK,intent);
-//
-//        editor = pref.edit();
-//        editor.putString("ip1",ip1);
-//        editor.putString("ip2",ip2);
-//        editor.putString("ip3",ip3);
-//        editor.putString("ip4",ip4);
-//        editor.putString("ports",ports);
-//        editor.putString("patterns",patterns);
-//        editor.commit();
         finish();
         dataStore = true;
-
     }
     private  View.OnClickListener itemsOnClick = new View.OnClickListener(){
         public  void  onClick(View v){
@@ -191,6 +165,7 @@ public class MotorSettingActivity extends AppCompatActivity {
                     editor.putString("motor_pattern",motor_pattern);
                     editor.commit();
                     Toast.makeText(getApplicationContext(), "你选择了 "+motor_pattern, Toast.LENGTH_SHORT).show();
+                    new MainActivity.MyThread("@R"+motor_pattern).start();
                     dismissWindow();
                     break;
                 case R.id.motorClose:
@@ -199,6 +174,7 @@ public class MotorSettingActivity extends AppCompatActivity {
                     editor.putString("motor_pattern",motor_pattern);
                     editor.commit();
                     Toast.makeText(getApplicationContext(), "你选择了 "+motor_pattern, Toast.LENGTH_SHORT).show();
+                    new MainActivity.MyThread("@R"+motor_pattern).start();
                     dismissWindow();
                     break;
                 case R.id.motorDirection1:
@@ -207,6 +183,7 @@ public class MotorSettingActivity extends AppCompatActivity {
                     editor.putString("motor_direction",motor_direction);
                     editor.commit();
                     Toast.makeText(getApplicationContext(), "你选择了 "+motor_direction, Toast.LENGTH_SHORT).show();
+                    new MainActivity.MyThread("@D"+motor_direction).start();
                     dismissWindow();
                     break;
                 case R.id.motorDirection2:
@@ -215,6 +192,7 @@ public class MotorSettingActivity extends AppCompatActivity {
                     editor.putString("motor_direction",motor_direction);
                     editor.commit();
                     Toast.makeText(getApplicationContext(), "你选择了 "+motor_direction, Toast.LENGTH_SHORT).show();
+                    new MainActivity.MyThread("@D"+motor_direction).start();
                     dismissWindow();
                     break;
                 case R.id.motorSpeed1:
@@ -223,6 +201,7 @@ public class MotorSettingActivity extends AppCompatActivity {
                     editor.putString("motor_speed",motor_speed);
                     editor.commit();
                     Toast.makeText(getApplicationContext(), "你选择了 "+motor_speed, Toast.LENGTH_SHORT).show();
+                    new MainActivity.MyThread("@S"+motor_speed).start();
                     dismissWindow();
                     break;
                 case R.id.motorSpeed2:
@@ -231,6 +210,7 @@ public class MotorSettingActivity extends AppCompatActivity {
                     editor.putString("motor_speed",motor_speed);
                     editor.commit();
                     Toast.makeText(getApplicationContext(), "你选择了  "+motor_speed, Toast.LENGTH_SHORT).show();
+                    new MainActivity.MyThread("@S"+motor_speed).start();
                     dismissWindow();
                     break;
                 case R.id.motorPulse1:
@@ -239,6 +219,7 @@ public class MotorSettingActivity extends AppCompatActivity {
                     editor.putString("motor_pulse",motor_pulse);
                     editor.commit();
                     Toast.makeText(getApplicationContext(), "你选择了 "+motor_pulse, Toast.LENGTH_SHORT).show();
+                    new MainActivity.MyThread("@P"+motor_pulse).start();
                     dismissWindow();
                     break;
                 case R.id.motorPulse2:
@@ -247,6 +228,7 @@ public class MotorSettingActivity extends AppCompatActivity {
                     editor.putString("motor_pulse",motor_pulse);
                     editor.commit();
                     Toast.makeText(getApplicationContext(), "你选择了 "+motor_pulse, Toast.LENGTH_SHORT).show();
+                    new MainActivity.MyThread("@P"+motor_pulse).start();
                     dismissWindow();
                     break;
                 case R.id.laserChannel1:
@@ -255,6 +237,7 @@ public class MotorSettingActivity extends AppCompatActivity {
                     editor.putString("laser_channel",laser_channel);
                     editor.commit();
                     Toast.makeText(getApplicationContext(), "你选择了 "+laser_channel, Toast.LENGTH_SHORT).show();
+                    new MainActivity.MyThread("@E"+laser_channel).start();
                     dismissWindow();
                     break;
                 case R.id.laserChannel2:
@@ -263,6 +246,7 @@ public class MotorSettingActivity extends AppCompatActivity {
                     editor.putString("laser_channel",laser_channel);
                     editor.commit();
                     Toast.makeText(getApplicationContext(), "你选择了 "+laser_channel, Toast.LENGTH_SHORT).show();
+                    new MainActivity.MyThread("@E"+laser_channel).start();
                     dismissWindow();
                     break;
                 case R.id.valvePosition1:
@@ -271,6 +255,7 @@ public class MotorSettingActivity extends AppCompatActivity {
                     editor.putString("valve_pos",valve_pos);
                     editor.commit();
                     Toast.makeText(getApplicationContext(), "你选择了 "+valve_pos, Toast.LENGTH_SHORT).show();
+                    new MainActivity.MyThread("@B"+valve_pos).start();
                     dismissWindow();
                     break;
                 case R.id.valvePosition2:
@@ -279,6 +264,7 @@ public class MotorSettingActivity extends AppCompatActivity {
                     editor.putString("valve_pos",valve_pos);
                     editor.commit();
                     Toast.makeText(getApplicationContext(), "你选择了 "+valve_pos, Toast.LENGTH_SHORT).show();
+                    new MainActivity.MyThread("@B"+valve_pos).start();
                     dismissWindow();
                     break;
                 case R.id.motorOKModify:
