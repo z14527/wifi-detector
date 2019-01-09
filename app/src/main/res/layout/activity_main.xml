@@ -18,12 +18,12 @@
         <lecho.lib.hellocharts.view.LineChartView
             android:id="@+id/line_chart"
             android:layout_width="fill_parent"
-            android:layout_height="200dp"/>
+            android:layout_height="140dp"/>
         <EditText
             android:id="@+id/sendText"
             android:layout_width="match_parent"
-            android:layout_marginTop="250dp"
-            android:layout_height="30dp"
+            android:layout_marginTop="150dp"
+            android:layout_height="80dp"
             android:gravity="top|left"
             android:background="@drawable/border_white"
             android:hint="@string/sendText"
@@ -47,7 +47,7 @@
         <TextView
             android:id="@+id/receiver"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="80dp"
             android:layout_below="@id/send"
             android:layout_marginTop="10dp"
             android:background="@drawable/border_white"

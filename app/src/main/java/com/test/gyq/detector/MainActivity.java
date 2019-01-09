@@ -87,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
     private List<AxisValue> mAxisXValues = new ArrayList<AxisValue>();
     private Timer timer = null;
     private static boolean isDoing = false;
-    static Socket socket;
+    static Socket socket = null;
     static Context context;
 
-    static DatagramSocket socket2;
+    static DatagramSocket socket2 = null;
 
     private static TextView Receiver;
 
@@ -167,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
         wifi_pwd = pref.getString("wifi_pwd","");
         wifi_ip = pref.getString("wifi_ip","");
         wifi_port = pref.getString("wifi_port","");
+        patterns = pref.getString("patterns","");
 
         ImageButton infoBtn = (ImageButton) findViewById(R.id.info);
         ImageButton wifiBtn = (ImageButton) findViewById(R.id.wifi);
@@ -352,11 +353,24 @@ public class MainActivity extends AppCompatActivity {
                     wifi_name = data.getStringExtra("wifi_name");
                     wifi_pwd = data.getStringExtra("wifi_pwd");
                     wifi_ip = data.getStringExtra("wifi_ip");
+                    String wifi_port1 = wifi_port;
                     wifi_port = data.getStringExtra("wifi_port");
+                    String patterns1 = patterns;
                     patterns = data.getStringExtra("patterns");
+                    if(patterns1 != patterns || wifi_port1 != wifi_port){
+                        if(socket != null)
+                            try {
+                                socket.close();
+                            } catch (IOException e) {
+
+                            }
+                        if(socket2 != null)
+                            socket2.close();
+                        socket =  null;
+                        socket2 = null;
+                    }
                 //    port_num = Integer.parseInt(port);
                     //获取wifi服务
-
                 }
                 break;
             case 2:
@@ -399,8 +413,11 @@ public class MainActivity extends AppCompatActivity {
             bundle.clear();
             if (patterns.equals("TCP")) {
                 try {
-                    socket = new Socket();
-                    socket.connect(new InetSocketAddress(wifi_ip, port_num), 10000);
+                    if(socket == null) {
+                        socket = new Socket();
+                        socket.setReuseAddress(true);
+                        socket.connect(new InetSocketAddress(wifi_ip, port_num), 10000);
+                    }
                     OutputStream writer = socket.getOutputStream();
                     writer.write(text.getBytes("UTF-8"));
                     writer.flush();
@@ -413,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
                     myHandler.sendMessage(msg);
                     reader.close();
                     writer.close();
-                    socket.close();
+         //           socket.close();
                 } catch (SocketTimeoutException aa) {
                     bundle.putString("tip", "服务器连接失败！请检查网络是否打开");
                     msg.setData(bundle);
@@ -430,16 +447,18 @@ public class MainActivity extends AppCompatActivity {
                     }
                     InetAddress serverAddress = InetAddress.getByName(wifi_ip);
                     byte output_data[] = text.getBytes();
-                    DatagramPacket outputPacket = new DatagramPacket(output_data, output_data.length, serverAddress, port_num);
+                    DatagramPacket outputPacket = new DatagramPacket(output_data,
+                            output_data.length, serverAddress, port_num);
                     socket2.send(outputPacket);
                     byte input_data[] = new byte[1024 * 4];
-                    DatagramPacket inputPacket = new DatagramPacket(input_data, input_data.length);
+                    DatagramPacket inputPacket = new DatagramPacket(input_data,
+                            input_data.length);
                     socket2.receive(inputPacket);
                     String receive = new String(inputPacket.getData(), inputPacket.getOffset(), inputPacket.getLength());
                     bundle.putString("receive", receive);
                     msg.setData(bundle);
                     myHandler.sendMessage(msg);
-                    socket2.close();
+             //       socket2.close();
                 } catch (SocketTimeoutException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
