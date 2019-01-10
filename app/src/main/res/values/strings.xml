@@ -7,8 +7,10 @@
     <string name="config">参数配置</string>
     <string name="wifiname">目标WIFI名称</string>
     <string name="wifipwd">目标IWIFI密码</string>
-    <string name="ipconfig">目标IP</string>
-    <string name="port">目标端口</string>
+    <string name="wifi_ip">目标IP</string>
+    <string name="wifi_port">目标端口</string>
+    <string name="local_ip">本地IP</string>
+    <string name="local_port">本地端口</string>
     <string name="about">关于</string>
     <string name="dot">.</string>
     <string name="udp">UDP</string>

@@ -27,11 +27,12 @@ public class SettingActivity extends AppCompatActivity {
 
     private SelectWindow selectWindow;
 
-    private EditText wifi_name,wifi_pwd,wifi_ip,wifi_port;
+    private EditText wifi_name,wifi_pwd,wifi_ip,wifi_port,local_ip,local_port;
 
     static boolean dataStore = false;
 
-    static String patterns="",wifiName="",wifiIp="",wifiPwd="",wifiPort="";
+    static String patterns="",wifiName="",wifiIp="",wifiPwd="",wifiPort="",
+            localIp="",localPort="";
 
 
     @Override
@@ -45,11 +46,15 @@ public class SettingActivity extends AppCompatActivity {
         wifi_name = (EditText)findViewById(R.id.wifi_name);
         wifi_pwd = (EditText)findViewById(R.id.wifi_pwd);
         wifi_ip = (EditText)findViewById(R.id.wifi_ip);
-        wifi_port = (EditText)findViewById(R.id.port);
+        wifi_port = (EditText)findViewById(R.id.wifi_port);
+        local_ip = (EditText)findViewById(R.id.local_ip);
+        local_port = (EditText)findViewById(R.id.local_port);
         wifi_name.setText(pref.getString("wifi_name",""));
         wifi_pwd.setText(pref.getString("wifi_pwd",""));
         wifi_ip.setText(pref.getString("wifi_ip",""));
         wifi_port.setText(pref.getString("wifi_port",""));
+        local_ip.setText(pref.getString("local_ip",""));
+        local_port.setText(pref.getString("local_port",""));
         pattern.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 selectWindow = new SelectWindow(SettingActivity.this,itemsOnClick);
@@ -84,10 +89,14 @@ public class SettingActivity extends AppCompatActivity {
             wifiPwd = pref.getString("wifi_pwd","");
             wifiIp = pref.getString("wifi_ip","");
             wifiPort = pref.getString("wifi_port","");
+            localIp = pref.getString("local_ip","");
+            localPort = pref.getString("local_port","");
             wifi_name.setText(wifiName);
             wifi_pwd.setText(wifiPwd);
             wifi_ip.setText(wifiIp);
             wifi_port.setText(wifiPort);
+            local_ip.setText(localIp);
+            local_port.setText(localPort);
         }
     }
 
@@ -97,16 +106,22 @@ public class SettingActivity extends AppCompatActivity {
         wifi_name = (EditText)findViewById(R.id.wifi_name);
         wifi_pwd = (EditText)findViewById(R.id.wifi_pwd);
         wifi_ip = (EditText)findViewById(R.id.wifi_ip);
-        wifi_port = (EditText)findViewById(R.id.port);
+        wifi_port = (EditText)findViewById(R.id.wifi_port);
+        local_ip = (EditText)findViewById(R.id.local_ip);
+        local_port = (EditText)findViewById(R.id.local_port);
         wifiName = wifi_name.getText().toString();
         wifiPwd = wifi_pwd.getText().toString();
         wifiIp = wifi_ip.getText().toString();
         wifiPort = wifi_port.getText().toString();
+        localIp = local_ip.getText().toString();
+        localPort = local_port.getText().toString();
         Intent intent = new Intent();
         intent.putExtra("wifi_name",wifiName);
         intent.putExtra("wifi_pwd",wifiPwd);
         intent.putExtra("wifi_ip",wifiIp);
         intent.putExtra("wifi_port",wifiPort);
+        intent.putExtra("local_ip",localIp);
+        intent.putExtra("local_port",localPort);
         intent.putExtra("patterns",patterns);
         setResult(RESULT_OK,intent);
 
@@ -115,6 +130,8 @@ public class SettingActivity extends AppCompatActivity {
         editor.putString("wifi_pwd",wifiPwd);
         editor.putString("wifi_ip",wifiIp);
         editor.putString("wifi_port",wifiPort);
+        editor.putString("local_ip",localIp);
+        editor.putString("local_port",localPort);
         editor.putString("patterns",patterns);
         editor.commit();
         finish();
@@ -134,9 +151,15 @@ public class SettingActivity extends AppCompatActivity {
             switch(v.getId()){
                 case R.id.UDP:
                     patterns = "UDP";
+                    editor = pref.edit();
+                    editor.putString("patterns",patterns);
+                    editor.commit();
                     break;
                 case R.id.TCP:
                     patterns = "TCP";
+                    editor = pref.edit();
+                    editor.putString("patterns",patterns);
+                    editor.commit();
                     break;
                 case R.id.cancel:
                     selectWindow.dismiss();

@@ -1,6 +1,7 @@
 package com.test.gyq.detector;
 
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -18,6 +20,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.method.ScrollingMovementMethod;
@@ -44,6 +47,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
@@ -100,11 +104,13 @@ public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences pref;
     static String patterns="";
-    static String wifi_name="",wifi_pwd="",wifi_port="",wifi_ip="",motor_pattern="",motor_speed="",motor_pulse="",
+    static String wifi_name="",wifi_pwd="",wifi_port="",wifi_ip="",
+            local_ip="",local_port="",
+            motor_pattern="",motor_speed="",motor_pulse="",
             motor_direction="",laser_channel="",valve_pos="";
-    static int port_num=0;
-    final WifiAdminUtils mWifiAdmin = null;
-
+    static int wifi_port_num=0,local_port_num=0;
+    //final WifiAdminUtils mWifiAdmin = null;
+    //WifiC wifiC = null;
     public static Handler myHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -124,6 +130,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         context = MainActivity.this;
         pref = PreferenceManager.getDefaultSharedPreferences(this);
+    //    if(wifiC == null)
+     //       wifiC = new WifiC();
 
         sendText = (EditText) findViewById(R.id.sendText);
         Receiver = (TextView) findViewById(R.id.receiver);
@@ -146,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                 String sendtext = sendText.getText().toString();
                 Receiver.append("通信模式：" + patterns + "\n");
                 Receiver.append("目标IP：" + wifi_ip + "\n");
-                Receiver.append("目标端口：" + port_num + "\n");
+                Receiver.append("目标端口：" + wifi_port_num + "\n");
           //      Toast.makeText(getApplicationContext(), Receiver.getText().toString(), Toast.LENGTH_LONG).show();
                 new MyThread(sendtext).start();
             }
@@ -167,6 +175,8 @@ public class MainActivity extends AppCompatActivity {
         wifi_pwd = pref.getString("wifi_pwd","");
         wifi_ip = pref.getString("wifi_ip","");
         wifi_port = pref.getString("wifi_port","");
+        local_ip = pref.getString("local_ip","");
+        local_port = pref.getString("local_port","");
         patterns = pref.getString("patterns","");
 
         ImageButton infoBtn = (ImageButton) findViewById(R.id.info);
@@ -178,6 +188,20 @@ public class MainActivity extends AppCompatActivity {
 //        doBtn.setScaleType(ImageView.ScaleType.FIT_XY);
         infoBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                pref = PreferenceManager.getDefaultSharedPreferences(context);
+                motor_pattern = pref.getString("motor_pattern","");
+                motor_speed = pref.getString("motor_speed","");
+                motor_pulse = pref.getString("motor_pulse","");
+                motor_direction = pref.getString("motor_direction","");
+                laser_channel = pref.getString("laser_channel","");
+                valve_pos = pref.getString("valve_pos","");
+                wifi_name = pref.getString("wifi_name","");
+                wifi_pwd = pref.getString("wifi_pwd","");
+                wifi_ip = pref.getString("wifi_ip","");
+                wifi_port = pref.getString("wifi_port","");
+                local_ip = pref.getString("local_ip","");
+                local_port = pref.getString("local_port","");
+                patterns = pref.getString("patterns","");
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle("配置具体情况");    //设置对话框标题
                 builder.setIcon(android.R.drawable.btn_star);   //设置对话框标题前的图标
@@ -185,11 +209,19 @@ public class MainActivity extends AppCompatActivity {
                 //tv.setBackgroundResource(R.drawable.fengmian);
                 tv.setTextSize(25);
                 tv.setTextColor(Color.RED);
+                String connet_status = "未连接";
+                WifiC wifiC = new WifiC();
+                String wifi_name1 = wifiC.getWifiSSID(context);
+                if (wifi_name1.indexOf(wifi_name) > 0)
+                    connet_status = wifi_name1 + "已连接";
                 String info="Wifi名称："+wifi_name+
                         "\nWifi密码："+wifi_pwd+
                         "\nWifi IP："+wifi_ip+
                         "\nWifi端口："+wifi_port+
+                        "\n本地 IP："+local_ip+
+                        "\n本地端口："+local_port+
                         "\n通信方式："+patterns+
+                        "\n连接WIFI状态："+connet_status+
                         "\n\n步进电机工作状态："+motor_pattern+
                         "\n步进速度："+motor_speed+
                         "\n步进脉冲："+motor_pulse+
@@ -352,12 +384,12 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     wifi_name = data.getStringExtra("wifi_name");
                     wifi_pwd = data.getStringExtra("wifi_pwd");
-                    wifi_ip = data.getStringExtra("wifi_ip");
-                    String wifi_port1 = wifi_port;
-                    wifi_port = data.getStringExtra("wifi_port");
-                    String patterns1 = patterns;
-                    patterns = data.getStringExtra("patterns");
-                    if(patterns1 != patterns || wifi_port1 != wifi_port){
+                    if(wifi_ip != data.getStringExtra("wifi_ip") ||
+                            wifi_port != data.getStringExtra("wifi_port") ||
+                            local_ip != data.getStringExtra("local_ip") ||
+                            local_port != data.getStringExtra("local_port") ||
+                            patterns != data.getStringExtra("patterns"))
+                    {
                         if(socket != null)
                             try {
                                 socket.close();
@@ -399,12 +431,22 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             if(wifi_ip=="" || wifi_port=="")
                 return;
-            try{
-                port_num = Integer.parseInt(wifi_port);
+            if((local_ip=="" || local_port=="") && patterns == "UDP")
+                return;
+             try{
+                wifi_port_num = Integer.parseInt(wifi_port);
             }catch(NumberFormatException e)
             {
-                Toast.makeText(context, "通信端口出错", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "WIFI通信端口出错", Toast.LENGTH_LONG).show();
                 return;
+            }
+            if(patterns=="UDP") {
+                try {
+                    local_port_num = Integer.parseInt(local_port);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(context, "本地通信端口出错", Toast.LENGTH_LONG).show();
+                    return;
+                }
             }
 
             Message msg = new Message();
@@ -416,7 +458,7 @@ public class MainActivity extends AppCompatActivity {
                     if(socket == null) {
                         socket = new Socket();
                         socket.setReuseAddress(true);
-                        socket.connect(new InetSocketAddress(wifi_ip, port_num), 10000);
+                        socket.connect(new InetSocketAddress(wifi_ip, wifi_port_num), 10000);
                     }
                     OutputStream writer = socket.getOutputStream();
                     writer.write(text.getBytes("UTF-8"));
@@ -441,14 +483,14 @@ public class MainActivity extends AppCompatActivity {
             } else if (patterns.equals("UDP")) {
                 try {
                     if (socket2 == null) {
-                        socket2 = new DatagramSocket(null);
+                        socket2 = new DatagramSocket(local_port_num);
                         socket2.setReuseAddress(true);
-                        socket2.bind(new InetSocketAddress(port_num));
+                        socket2.bind(new InetSocketAddress(wifi_port_num));
                     }
                     InetAddress serverAddress = InetAddress.getByName(wifi_ip);
                     byte output_data[] = text.getBytes();
                     DatagramPacket outputPacket = new DatagramPacket(output_data,
-                            output_data.length, serverAddress, port_num);
+                            output_data.length, serverAddress, wifi_port_num);
                     socket2.send(outputPacket);
                     byte input_data[] = new byte[1024 * 4];
                     DatagramPacket inputPacket = new DatagramPacket(input_data,
@@ -490,7 +532,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REFRESH_CONN = 100;
     // Wifi管理类
-    private WifiAdminUtils mWifiAdmin;
+    private WifiAdminUtils mWifiAdmin = null;
     // 扫描结果列表
     private List<ScanResult> list = new ArrayList<ScanResult>();
     // 显示列表
@@ -504,7 +546,12 @@ public class MainActivity extends AppCompatActivity {
 
     public String ip = "";
 
-    public boolean isGetIp = false;
+     SharedPreferences pref;
+     String patterns="";
+     String wifi_name="",wifi_pwd="",wifi_port="",wifi_ip="",
+             local_ip="",local_port="";
+
+
 
     private OnNetworkChangeListener mOnNetworkChangeListener = new OnNetworkChangeListener() {
 
@@ -699,7 +746,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(context, "打开WIFI出错", Toast.LENGTH_LONG).show();
             }
         }
-        if(mWifiAdmin.getBSSID().indexOf("ESP8266") <= 0)
+        if(mWifiAdmin.getBSSID().indexOf(wifi_name) <= 0)
             mWifiAdmin.disConnectionWifi(mWifiAdmin.getConnNetId());
         int i= 20;
         boolean connect_ok = false;
@@ -709,7 +756,7 @@ public class MainActivity extends AppCompatActivity {
                 // 为了避免程序一直while循环，让它睡个100毫秒在检测……
                 Thread.currentThread();
                 Thread.sleep(100);
-                if(mWifiAdmin.connect("ESP8266","0123456789",
+                if(mWifiAdmin.connect(wifi_name,wifi_pwd,
                         WifiConnectUtils.WifiCipherType.WIFICIPHER_WPA)){
                     connect_ok = true;
                     break;
@@ -723,6 +770,13 @@ public class MainActivity extends AppCompatActivity {
         }
         if(connect_ok) {
             Toast.makeText(context, "连接成功\n", Toast.LENGTH_LONG).show();
+            ContentResolver cr = context.getContentResolver();
+            local_ip = IpGetUtil.getIPAddress(context);
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString("local_ip",local_ip);
+            editor.commit();
+//            Settings.System.putString(cr, Settings.System.WIFI_STATIC_IP, local_ip);
         }
         else
             Toast.makeText(context, "连接失败", Toast.LENGTH_LONG).show();
@@ -733,7 +787,16 @@ public class MainActivity extends AppCompatActivity {
      * 初始化数据
      */
     private void initData() {
-        mWifiAdmin = new WifiAdminUtils(context);
+        pref = PreferenceManager.getDefaultSharedPreferences(context);
+        wifi_name = pref.getString("wifi_name","");
+        wifi_pwd = pref.getString("wifi_pwd","");
+        wifi_ip = pref.getString("wifi_ip","");
+        wifi_port = pref.getString("wifi_port","");
+        local_ip = pref.getString("local_ip","");
+        local_port = pref.getString("local_port","");
+        patterns = pref.getString("patterns","");
+        if(mWifiAdmin == null)
+            mWifiAdmin = new WifiAdminUtils(context);
         // 获得Wifi列表信息
         getWifiListInfo();
     }
@@ -751,5 +814,56 @@ public class MainActivity extends AppCompatActivity {
         } else {
             list = tmpList;
         }
+    }
+    public String getWifiSSID(Context context1){
+        context = context1;
+        initData();
+        return mWifiAdmin.getBSSID();
+    }
+}
+class IpGetUtil {
+    public static String getIPAddress(Context context) {
+        NetworkInfo info = ((ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+        if (info != null && info.isConnected()) {
+            if (info.getType() == ConnectivityManager.TYPE_MOBILE) {//当前使用2G/3G/4G网络
+                try {
+                    //Enumeration<NetworkInterface> en=NetworkInterface.getNetworkInterfaces();
+                    for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                        NetworkInterface intf = en.nextElement();
+                        for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                            InetAddress inetAddress = enumIpAddr.nextElement();
+                            if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                                return inetAddress.getHostAddress();
+                            }
+                        }
+                    }
+                } catch (SocketException e) {
+                    e.printStackTrace();
+                }
+
+            } else if (info.getType() == ConnectivityManager.TYPE_WIFI) {//当前使用无线网络
+                WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+                WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                String ipAddress = intIP2StringIP(wifiInfo.getIpAddress());//得到IPV4地址
+                return ipAddress;
+            }
+        } else {
+            //当前无网络连接,请在设置中打开网络
+        }
+        return null;
+    }
+
+    /**
+     * 将得到的int类型的IP转换为String类型
+     *
+     * @param ip
+     * @return
+     */
+    public static String intIP2StringIP(int ip) {
+        return (ip & 0xFF) + "." +
+                ((ip >> 8) & 0xFF) + "." +
+                ((ip >> 16) & 0xFF) + "." +
+                (ip >> 24 & 0xFF);
     }
 }
