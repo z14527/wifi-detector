@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
             motor_pattern="",motor_speed="",motor_pulse="",
             motor_direction="",laser_channel="",valve_pos="";
     static int wifi_port_num=0,local_port_num=0;
+    private UDPUtils udpUtils = null;
     //final WifiAdminUtils mWifiAdmin = null;
     //WifiC wifiC = null;
     public static Handler myHandler = new Handler() {
@@ -248,7 +249,41 @@ public class MainActivity extends AppCompatActivity {
         wifiBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 WifiC wifiC = new WifiC();
-                wifiC.dowifi(MainActivity.this);
+                if(wifiC.dowifi(MainActivity.this)){
+                    pref = PreferenceManager.getDefaultSharedPreferences(context);
+                    motor_pattern = pref.getString("motor_pattern","");
+                    motor_speed = pref.getString("motor_speed","");
+                    motor_pulse = pref.getString("motor_pulse","");
+                    motor_direction = pref.getString("motor_direction","");
+                    laser_channel = pref.getString("laser_channel","");
+                    valve_pos = pref.getString("valve_pos","");
+                    wifi_name = pref.getString("wifi_name","");
+                    wifi_pwd = pref.getString("wifi_pwd","");
+                    wifi_ip = pref.getString("wifi_ip","");
+                    wifi_port = pref.getString("wifi_port","");
+                    local_ip = pref.getString("local_ip","");
+                    local_port = pref.getString("local_port","");
+                    patterns = pref.getString("patterns","");
+                    if(wifi_ip=="" || wifi_port=="")
+                        return;
+                    if((local_ip=="" || local_port=="") && patterns == "UDP")
+                        return;
+                    try{
+                        wifi_port_num = Integer.parseInt(wifi_port);
+                    }catch(NumberFormatException e)
+                    {
+                        Toast.makeText(context, "WIFI通信端口出错", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    try {
+                        local_port_num = Integer.parseInt(local_port);
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(context, "本地通信端口出错", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    udpUtils = new UDPUtils(wifi_ip,wifi_port_num,local_port_num);
+                    new Thread(udpUtils).start();
+                }
             }
         });
         getBtn.setOnClickListener(new View.OnClickListener() {
@@ -394,7 +429,6 @@ public class MainActivity extends AppCompatActivity {
                             try {
                                 socket.close();
                             } catch (IOException e) {
-
                             }
                         if(socket2 != null)
                             socket2.close();
@@ -500,6 +534,7 @@ public class MainActivity extends AppCompatActivity {
                     bundle.putString("receive", receive);
                     msg.setData(bundle);
                     myHandler.sendMessage(msg);
+                    Receiver.append(receive);
              //       socket2.close();
                 } catch (SocketTimeoutException e) {
                     e.printStackTrace();
@@ -508,6 +543,144 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
+        }
+    }
+    static class UDPUtils implements Runnable {
+
+
+        public boolean keepRunning = true;//线程开始标志
+        public static final String TAG = "TEST";
+        //发送目的主机IP和端口
+        private static String SERVER_IP;
+        private static int SERVER_PORT;
+
+        //本机监听的端口
+        private static int LOCAL_PORT = 8929;
+
+        //发送的消息
+        private String message = "test";
+
+        //服务器接收的消息
+        private String receive;
+
+        //Handler传递的数据
+        private Message msg;
+        //Message传递的Buddle参数
+        private Bundle bundle;
+
+        //wifi名和密码
+        private String SSID,password;
+
+
+        public UDPUtils(){
+
+        }
+
+
+        public UDPUtils(String Server_IP, int Server_Port,int Local_Port) {
+            SERVER_IP = Server_IP;
+            SERVER_PORT = Server_Port;
+            LOCAL_PORT = Local_Port;
+        }
+
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+        public String getMessage() {
+            return message;
+        }
+
+
+
+
+        /**
+         * 线程停止标志
+         * @param keepRunning
+         */
+        public void setKeepRunning(boolean keepRunning) {
+            this.keepRunning = keepRunning;
+        }
+
+        public boolean getKeepRunning(){
+            return this.keepRunning;
+        }
+
+        /**
+         * 服务端监听程序
+         */
+        public void StartListen() {
+            keepRunning = getKeepRunning();
+            DatagramSocket socket = null;
+            byte[] data = new byte[1024];
+            DatagramPacket packet = new DatagramPacket(data, data.length);
+            try {
+                socket = new DatagramSocket(LOCAL_PORT);
+                socket.setBroadcast(true);
+                Log.i(TAG, "socket");
+//     socket.setSoTimeout(200);
+            } catch(Exception e) {
+                e.printStackTrace();
+                return;
+            }
+            while (keepRunning) {
+                try {
+                    //等待客户机连接
+                    packet.setData(data);
+                    Log.e(TAG, "receive0");
+                    socket.receive(packet);
+                    receive = new String(packet.getData(), 0, packet.getLength());
+                    msg = new Message();
+                    bundle = new Bundle();
+                    //把数据放到buddle中
+                    bundle.putString("receive", receive);
+                    //把buddle传递到message
+                    msg.setData(bundle);
+                    myHandler.sendMessage(msg);
+                } catch (Exception e) {
+                    continue;
+                }
+            }
+            if (socket != null) {
+                socket.close();
+                socket = null;
+            }
+        }
+        //利用Handler将接收的数据实时打印出来
+        Handler myHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg)
+            {
+                super.handleMessage(msg);
+                Bundle bundle=new Bundle();
+//从传过来的message数据中取出传过来的绑定数据的bundle对象
+                bundle = msg.getData();
+                receive = bundle.getString("receive");
+                setMessage(receive);
+            }
+        };
+
+        public void sendControInfo(String message){
+
+            try {
+                DatagramSocket sendSocket = new DatagramSocket();
+
+                byte[] configInfo = message.getBytes();
+
+                InetAddress ip = InetAddress.getByName(SERVER_IP); //即目的IP
+                DatagramPacket sendPacket = new DatagramPacket(configInfo, configInfo.length, ip ,SERVER_PORT);// 创建发送类型的数据报：
+
+                sendSocket.send(sendPacket);  // 通过套接字发送数据：
+
+                sendSocket.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void run() {
+            StartListen();
         }
     }
 
@@ -524,7 +697,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(socket != null)
+            try {
+                socket.close();
+            } catch (IOException e) {
+            }
+        if(socket2 != null)
+            socket2.close();
+        socket =  null;
+        socket2 = null;        //关闭线程
+      //  udpUtils.setKeepRunning(false);
+    }
+
 }
+
 
  class WifiC{
 
@@ -732,7 +921,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-    public void dowifi(Context context1) {
+    public boolean dowifi(Context context1) {
         context = context1;
         initData();
         while(!mWifiAdmin.openWifi()){
@@ -744,6 +933,7 @@ public class MainActivity extends AppCompatActivity {
                 //           mWifiAdmin.openWifi();
             } catch (InterruptedException ie) {
                 Toast.makeText(context, "打开WIFI出错", Toast.LENGTH_LONG).show();
+                return false;
             }
         }
         if(mWifiAdmin.getBSSID().indexOf(wifi_name) <= 0)
@@ -766,6 +956,7 @@ public class MainActivity extends AppCompatActivity {
                 //           mWifiAdmin.openWifi();
             } catch (InterruptedException ie) {
                 Toast.makeText(context, "连接ESP WIFI出错", Toast.LENGTH_LONG).show();
+                return false;
             }
         }
         if(connect_ok) {
@@ -776,10 +967,13 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = pref.edit();
             editor.putString("local_ip",local_ip);
             editor.commit();
+            return true;
 //            Settings.System.putString(cr, Settings.System.WIFI_STATIC_IP, local_ip);
         }
-        else
+        else {
             Toast.makeText(context, "连接失败", Toast.LENGTH_LONG).show();
+            return false;
+        }
 //        isGetIp = true;
     }
 
