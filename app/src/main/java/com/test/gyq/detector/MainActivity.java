@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
             motor_pattern="",motor_speed="",motor_pulse="",
             motor_direction="",laser_channel="",valve_pos="";
     static int wifi_port_num=0,local_port_num=0;
-    private UDPUtils udpUtils = null;
     //final WifiAdminUtils mWifiAdmin = null;
     //WifiC wifiC = null;
     public static Handler myHandler = new Handler() {
@@ -153,9 +152,9 @@ public class MainActivity extends AppCompatActivity {
         send.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String sendtext = sendText.getText().toString();
-                Receiver.append("通信模式：" + patterns + "\n");
-                Receiver.append("目标IP：" + wifi_ip + "\n");
-                Receiver.append("目标端口：" + wifi_port_num + "\n");
+            //    Receiver.append("通信模式：" + patterns + "\n");
+            //    Receiver.append("目标IP：" + wifi_ip + "\n");
+            //    Receiver.append("目标端口：" + wifi_port_num + "\n");
           //      Toast.makeText(getApplicationContext(), Receiver.getText().toString(), Toast.LENGTH_LONG).show();
                 new MyThread(sendtext).start();
             }
@@ -281,8 +280,16 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(context, "本地通信端口出错", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    udpUtils = new UDPUtils(wifi_ip,wifi_port_num,local_port_num);
-                    new Thread(udpUtils).start();
+                    try {
+                        if(socket2 == null)
+                            socket2 = new DatagramSocket(local_port_num);
+                        DatagramPacket packet = new DatagramPacket(new byte[256],
+                                256);
+                        new UDPServer(socket2,packet).start();
+                    }
+                    catch (SocketException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -545,145 +552,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    static class UDPUtils implements Runnable {
-
-
-        public boolean keepRunning = true;//线程开始标志
-        public static final String TAG = "TEST";
-        //发送目的主机IP和端口
-        private static String SERVER_IP;
-        private static int SERVER_PORT;
-
-        //本机监听的端口
-        private static int LOCAL_PORT = 8929;
-
-        //发送的消息
-        private String message = "test";
-
-        //服务器接收的消息
-        private String receive;
-
-        //Handler传递的数据
-        private Message msg;
-        //Message传递的Buddle参数
-        private Bundle bundle;
-
-        //wifi名和密码
-        private String SSID,password;
-
-
-        public UDPUtils(){
-
-        }
-
-
-        public UDPUtils(String Server_IP, int Server_Port,int Local_Port) {
-            SERVER_IP = Server_IP;
-            SERVER_PORT = Server_Port;
-            LOCAL_PORT = Local_Port;
-        }
-
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-        public String getMessage() {
-            return message;
-        }
-
-
-
-
-        /**
-         * 线程停止标志
-         * @param keepRunning
-         */
-        public void setKeepRunning(boolean keepRunning) {
-            this.keepRunning = keepRunning;
-        }
-
-        public boolean getKeepRunning(){
-            return this.keepRunning;
-        }
-
-        /**
-         * 服务端监听程序
-         */
-        public void StartListen() {
-            keepRunning = getKeepRunning();
-            DatagramSocket socket = null;
-            byte[] data = new byte[1024];
-            DatagramPacket packet = new DatagramPacket(data, data.length);
-            try {
-                socket = new DatagramSocket(LOCAL_PORT);
-                socket.setBroadcast(true);
-                Log.i(TAG, "socket");
-//     socket.setSoTimeout(200);
-            } catch(Exception e) {
-                e.printStackTrace();
-                return;
-            }
-            while (keepRunning) {
-                try {
-                    //等待客户机连接
-                    packet.setData(data);
-                    Log.e(TAG, "receive0");
-                    socket.receive(packet);
-                    receive = new String(packet.getData(), 0, packet.getLength());
-                    msg = new Message();
-                    bundle = new Bundle();
-                    //把数据放到buddle中
-                    bundle.putString("receive", receive);
-                    //把buddle传递到message
-                    msg.setData(bundle);
-                    myHandler.sendMessage(msg);
-                } catch (Exception e) {
-                    continue;
-                }
-            }
-            if (socket != null) {
-                socket.close();
-                socket = null;
-            }
-        }
-        //利用Handler将接收的数据实时打印出来
-        Handler myHandler = new Handler(){
-            @Override
-            public void handleMessage(Message msg)
-            {
-                super.handleMessage(msg);
-                Bundle bundle=new Bundle();
-//从传过来的message数据中取出传过来的绑定数据的bundle对象
-                bundle = msg.getData();
-                receive = bundle.getString("receive");
-                setMessage(receive);
-            }
-        };
-
-        public void sendControInfo(String message){
-
-            try {
-                DatagramSocket sendSocket = new DatagramSocket();
-
-                byte[] configInfo = message.getBytes();
-
-                InetAddress ip = InetAddress.getByName(SERVER_IP); //即目的IP
-                DatagramPacket sendPacket = new DatagramPacket(configInfo, configInfo.length, ip ,SERVER_PORT);// 创建发送类型的数据报：
-
-                sendSocket.send(sendPacket);  // 通过套接字发送数据：
-
-                sendSocket.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void run() {
-            StartListen();
-        }
-    }
-
     public class Mytask extends TimerTask {
         @Override
         public void run() {
@@ -710,6 +578,56 @@ public class MainActivity extends AppCompatActivity {
         socket =  null;
         socket2 = null;        //关闭线程
       //  udpUtils.setKeepRunning(false);
+    }
+
+    public class UDPServer extends Thread {
+
+        private DatagramSocket server;
+        private DatagramPacket message;
+
+
+        public UDPServer(DatagramSocket server, DatagramPacket message){
+
+            this.server = server;
+            this.message = message;
+
+        }
+
+        @Override
+        public void run(){
+            try {
+                while(true) {
+                    System.out.println("Server started....");
+                    server.receive(message);
+                    threatMessage();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void threatMessage() throws IOException{
+
+            String messageReceived = new String(message.getData()).trim();
+            System.out.println("Message Received: "+messageReceived);
+            Receiver.append(messageReceived + "\n");
+
+            if(messageReceived.equals("hello")){
+
+                InetAddress address = message.getAddress();
+                int port = message.getPort();
+
+                String sendMessage = "ok";
+                byte[] byteSendMessage = sendMessage.getBytes();
+
+                DatagramPacket answerPacket = new DatagramPacket(byteSendMessage,byteSendMessage.length,address,port);
+
+                server.send(answerPacket);
+            }
+
+
+        }
+
     }
 
 }
@@ -961,12 +879,6 @@ public class MainActivity extends AppCompatActivity {
         }
         if(connect_ok) {
             Toast.makeText(context, "连接成功\n", Toast.LENGTH_LONG).show();
-            ContentResolver cr = context.getContentResolver();
-            local_ip = IpGetUtil.getIPAddress(context);
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-            SharedPreferences.Editor editor = pref.edit();
-            editor.putString("local_ip",local_ip);
-            editor.commit();
             return true;
 //            Settings.System.putString(cr, Settings.System.WIFI_STATIC_IP, local_ip);
         }

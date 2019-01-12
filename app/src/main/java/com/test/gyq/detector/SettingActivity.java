@@ -29,8 +29,6 @@ public class SettingActivity extends AppCompatActivity {
 
     private EditText wifi_name,wifi_pwd,wifi_ip,wifi_port,local_ip,local_port;
 
-    static boolean dataStore = false;
-
     static String patterns="",wifiName="",wifiIp="",wifiPwd="",wifiPort="",
             localIp="",localPort="";
 
@@ -55,6 +53,7 @@ public class SettingActivity extends AppCompatActivity {
         wifi_port.setText(pref.getString("wifi_port",""));
         local_ip.setText(pref.getString("local_ip",""));
         local_port.setText(pref.getString("local_port",""));
+        patterns = pref.getString("patterns","");
         pattern.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 selectWindow = new SelectWindow(SettingActivity.this,itemsOnClick);
@@ -83,26 +82,10 @@ public class SettingActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-
-        if(dataStore){
-            wifiName = pref.getString("wifi_name","");
-            wifiPwd = pref.getString("wifi_pwd","");
-            wifiIp = pref.getString("wifi_ip","");
-            wifiPort = pref.getString("wifi_port","");
-            localIp = pref.getString("local_ip","");
-            localPort = pref.getString("local_port","");
-            wifi_name.setText(wifiName);
-            wifi_pwd.setText(wifiPwd);
-            wifi_ip.setText(wifiIp);
-            wifi_port.setText(wifiPort);
-            local_ip.setText(localIp);
-            local_port.setText(localPort);
-        }
     }
 
     @Override
     public void onBackPressed(){
-
         wifi_name = (EditText)findViewById(R.id.wifi_name);
         wifi_pwd = (EditText)findViewById(R.id.wifi_pwd);
         wifi_ip = (EditText)findViewById(R.id.wifi_ip);
@@ -135,7 +118,6 @@ public class SettingActivity extends AppCompatActivity {
         editor.putString("patterns",patterns);
         editor.commit();
         finish();
-        dataStore = true;
     }
 
     private void initToolbar(){
