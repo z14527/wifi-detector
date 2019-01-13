@@ -5,8 +5,8 @@
     <string name="wifi_setting">WIFI配置</string>
     <string name="pattern">通信方式</string>
     <string name="config">参数配置</string>
-    <string name="wifiname">目标WIFI名称</string>
-    <string name="wifipwd">目标IWIFI密码</string>
+    <string name="wifiname">WIFI名称</string>
+    <string name="wifipwd">WIFI密码</string>
     <string name="wifi_ip">目标IP</string>
     <string name="wifi_port">目标端口</string>
     <string name="local_ip">本地IP</string>

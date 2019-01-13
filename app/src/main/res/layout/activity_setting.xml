@@ -26,8 +26,8 @@
         android:orientation="vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingTop="100dp"
-        android:paddingBottom="100dp">
+        android:paddingTop="60dp"
+        android:paddingBottom="30dp">
 
             <TableLayout
                 android:id="@+id/pattern"
@@ -62,18 +62,7 @@
 
              </TableRow>
             </TableLayout>
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center_vertical"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:text="@string/config"
-            />
-
-            <TableLayout
+        <TableLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/border"
@@ -172,7 +161,7 @@
         </TableLayout>
 
         <TableLayout
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="5dp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/border"
@@ -244,7 +233,7 @@
         </TableLayout>
 
         <TableLayout
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="5dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/border"
@@ -284,7 +273,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/border"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="5dp"
             android:shrinkColumns="0"
             android:stretchColumns="0">
 

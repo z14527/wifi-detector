@@ -37,6 +37,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -280,16 +282,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(context, "本地通信端口出错", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    try {
-                        if(socket2 == null)
-                            socket2 = new DatagramSocket(local_port_num);
-                        DatagramPacket packet = new DatagramPacket(new byte[256],
-                                256);
-                        new UDPServer(socket2,packet).start();
-                    }
-                    catch (SocketException e) {
-                        e.printStackTrace();
-                    }
+                    new HeartClient().launchFrame();
                 }
             }
         });
@@ -580,54 +573,81 @@ public class MainActivity extends AppCompatActivity {
       //  udpUtils.setKeepRunning(false);
     }
 
-    public class UDPServer extends Thread {
+    public class HeartClient {
 
-        private DatagramSocket server;
-        private DatagramPacket message;
-
-
-        public UDPServer(DatagramSocket server, DatagramPacket message){
-
-            this.server = server;
-            this.message = message;
+        /*
+         *  成员方法出场...
+         */
+        private DataOutputStream dos;
+        private DataInputStream dis;
+        public void HeartClient(){
 
         }
+        public void launchFrame(){
+            this.connect();
+        }
 
-        @Override
-        public void run(){
+        /**
+         * 我在努力地连接服务器中...
+         */
+        public void connect() {
             try {
-                while(true) {
-                    System.out.println("Server started....");
-                    server.receive(message);
-                    threatMessage();
+                if(socket2 == null){
+                    socket2 = new DatagramSocket(local_port_num);
+                    socket2.setReuseAddress(true);
+                    socket2.bind(new InetSocketAddress(wifi_ip,wifi_port_num));
                 }
+//                    socket2 = new Socket(wifi_ip,wifi_port_num);
+//                dos = new DataOutputStream(socket2..getOutputStream());
+//                dis = new DataInputStream(socket2.getInputStream());
+                new Thread(new SendThread()).start();
+//            dos.writeUTF("Hello,i find u!");
+//            } catch (UnknownHostException e) {
+//                System.out.println("UnknownHostException");
+//                e.printStackTrace();
             } catch (IOException e) {
+                System.out.println("IOException");
                 e.printStackTrace();
+            }finally{
+                //关闭啥尼...
             }
-        }
-
-        private void threatMessage() throws IOException{
-
-            String messageReceived = new String(message.getData()).trim();
-            System.out.println("Message Received: "+messageReceived);
-            Receiver.append(messageReceived + "\n");
-
-            if(messageReceived.equals("hello")){
-
-                InetAddress address = message.getAddress();
-                int port = message.getPort();
-
-                String sendMessage = "ok";
-                byte[] byteSendMessage = sendMessage.getBytes();
-
-                DatagramPacket answerPacket = new DatagramPacket(byteSendMessage,byteSendMessage.length,address,port);
-
-                server.send(answerPacket);
-            }
-
 
         }
 
+
+        /**
+         * 客户端接收消息的线程呦...
+         *
+         */
+        class SendThread implements Runnable{
+            private String str;
+            private boolean iConnect = false;
+
+            public void run(){
+                iConnect = true;
+                recMsg();
+
+            }
+            /**
+             * 消息，看招，哪里跑...（客户端接收消息的实现）
+             * @throws IOException
+             */
+            public void recMsg() {
+                try {
+                    while(iConnect){
+                        byte[] message = new byte[1024];
+                        DatagramPacket datagramPacket =new DatagramPacket(message,message.length);
+                        socket2.receive(datagramPacket);
+                        str = datagramPacket.getData().toString();
+                        //dis.readUTF();
+                        System.out.println(str);
+                        Receiver.append(str);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }

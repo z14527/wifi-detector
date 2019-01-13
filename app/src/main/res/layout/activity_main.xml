@@ -18,11 +18,11 @@
         <lecho.lib.hellocharts.view.LineChartView
             android:id="@+id/line_chart"
             android:layout_width="fill_parent"
-            android:layout_height="140dp"/>
+            android:layout_height="120dp"/>
         <EditText
             android:id="@+id/sendText"
             android:layout_width="match_parent"
-            android:layout_marginTop="150dp"
+            android:layout_marginTop="120dp"
             android:layout_height="80dp"
             android:gravity="top|left"
             android:background="@drawable/border_white"
@@ -69,7 +69,7 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/receiver"
             android:layout_below="@id/clean_2"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:background="@drawable/border_white"
             android:src="@drawable/info"/>
         <ImageButton
@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/info"
             android:layout_below="@id/clean_2"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:background="@drawable/border_white"
             android:src="@drawable/wifi"/>
         <ImageButton
@@ -88,7 +88,7 @@
             android:layout_toRightOf="@id/wifi"
             android:layout_marginLeft="10dp"
             android:layout_below="@id/clean_2"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:background="@drawable/border_white"
             android:src="@drawable/get"/>
         <ImageButton
@@ -96,9 +96,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/go"
             android:layout_toRightOf="@id/get"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="5dp"
             android:layout_below="@id/clean_2"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:background="@drawable/border_white"
             android:src="@drawable/start"/>
         <TextView
@@ -108,7 +108,7 @@
             android:textSize="10sp"
             android:layout_toLeftOf="@id/go"
             android:layout_below="@id/go"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="5dp"
             />
         </RelativeLayout>
  </LinearLayout>
