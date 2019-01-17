@@ -41,6 +41,12 @@
         <activity android:name="com.test.gyq.detector.MotorPulseSelectWindow" />
         <activity android:name="com.test.gyq.detector.LaserChannelSelectWindow" />
         <activity android:name="com.test.gyq.detector.ValvePositionSelectWindow"></activity>
+        <receiver android:name=".MainActivity$InternetDynamicBroadCastReceiver">
+            <intent-filter>
+                <!--<action android:name="ConnectivityManager.CONNECTIVITY_ACTION"/>//这样写是不对的-->
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
