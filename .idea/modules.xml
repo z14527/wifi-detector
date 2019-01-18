@@ -3,8 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/WifiConnect/WifiConnect.iml" filepath="$PROJECT_DIR$/WifiConnect/WifiConnect.iml" />
+      <module fileurl="file://D:\android-projects\wifi-detector\WifiConnect\WifiConnect.iml" filepath="D:\android-projects\wifi-detector\WifiConnect\WifiConnect.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://D:\android-projects\wifi-detector\app\app.iml" filepath="D:\android-projects\wifi-detector\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/wifi-detector.iml" filepath="$PROJECT_DIR$/wifi-detector.iml" />
+      <module fileurl="file://D:\android-projects\wifi-detector\wifi-detector.iml" filepath="D:\android-projects\wifi-detector\wifi-detector.iml" />
     </modules>
   </component>
 </project>

@@ -140,25 +140,15 @@ public class MainActivity extends AppCompatActivity {
             int what = msg.what;
             switch (what) {
                 case 1:
-                    /**
-                     * ListView条目控制在最后一行
-                     */
-               //     sendText = (EditText) findViewById(R.id.sendText);
                     text = sendText.getText().toString();
                     final byte[] buffer = text.getBytes();
-                    //logutils.e("---lin--->  run  2  text" + text);
-
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-
                             if(!updataPara())
                                 return;
                             DatagramSocket ds = null;
                             try {
-                                //new 一个DatagramSocket对象（即打开一个UDP端口准备从此处发出数据包）
-                                //logutils.e("---lin--->  run  2");
-                                //    dp = new DatagramPacket(buffer, buffer.length, new InetSocketAddress("192.168.20.211", 9999));
                                 if(dp == null)
                                     dp = new DatagramPacket(buffer,
                                         buffer.length,
@@ -177,7 +167,10 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     }).start();
-
+                    break;
+                case 3:
+                    Bundle bundle = msg.getData();
+                    Toast.makeText(context, bundle.getString("tip"), Toast.LENGTH_LONG).show();
                     break;
 
                 default:
@@ -213,9 +206,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         context = MainActivity.this;
         pref = PreferenceManager.getDefaultSharedPreferences(this);
-    //    if(wifiC == null)
-     //       wifiC = new WifiC();
-
         sendText = (EditText) findViewById(R.id.sendText);
         Receiver = (TextView) findViewById(R.id.receiver);
         Receiver.setMovementMethod(ScrollingMovementMethod.getInstance());
@@ -318,8 +308,6 @@ public class MainActivity extends AppCompatActivity {
         });
         wifiBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-      //          WifiC wifiC = new WifiC();
-       //         if(wifiC.dowifi(MainActivity.this)){
                 if(!updataPara())
                     return;
     //           boolean a = NetworkUtils.isWifiAvailable();
@@ -336,17 +324,17 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        //toastutils.showLong("网络侦听正在启用");
-                            byte[] buffer = new byte[1024];
+                        showMsg("网络侦听正在启用");
+                        byte[] buffer = new byte[1024];
                         //虽然开辟的缓冲内存大小为1024字节，但也可以设置一个小于该值的缓存空间接收数据包
                         DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
                         DatagramSocket ds = null;
                         try {
-                            //监听在UDP 9999 端口
+                            //监听在UDP 端口
                             ds = new DatagramSocket(local_port_num);
                         } catch (SocketException e) {
                             e.printStackTrace();
-                            //toastutils.showLong("无法创建侦听端口");
+                            showMsg("无法创建侦听端口");
                             return;
                         }
                         while (true) {
@@ -356,7 +344,7 @@ public class MainActivity extends AppCompatActivity {
                                 handler.sendEmptyMessage(2);
                                  } catch (IOException e) {
                                 e.printStackTrace();
-                                //toastutils.showLong("无法接收消息");
+                                showMsg("无法接收消息");
                                 return;
                             }
                             rtext = new String(dp.getData(),
@@ -549,6 +537,15 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             Toast.makeText(MainActivity.this,"网络发生了变化",Toast.LENGTH_SHORT).show();
         }
+    }
+    public void showMsg(String mtext){
+        Message msg = new Message();
+        msg.what = 3;
+        Bundle bundle = new Bundle();
+        bundle.clear();
+        bundle.putString("tip", mtext);
+        msg.setData(bundle);
+        handler.sendMessage(msg);
     }
     static class MyThread extends Thread {
 
@@ -1006,51 +1003,5 @@ public class MainActivity extends AppCompatActivity {
         context = context1;
         initData();
         return mWifiAdmin.getBSSID();
-    }
-}
-class IpGetUtil {
-    public static String getIPAddress(Context context) {
-        NetworkInfo info = ((ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-        if (info != null && info.isConnected()) {
-            if (info.getType() == ConnectivityManager.TYPE_MOBILE) {//当前使用2G/3G/4G网络
-                try {
-                    //Enumeration<NetworkInterface> en=NetworkInterface.getNetworkInterfaces();
-                    for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                        NetworkInterface intf = en.nextElement();
-                        for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                            InetAddress inetAddress = enumIpAddr.nextElement();
-                            if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                                return inetAddress.getHostAddress();
-                            }
-                        }
-                    }
-                } catch (SocketException e) {
-                    e.printStackTrace();
-                }
-
-            } else if (info.getType() == ConnectivityManager.TYPE_WIFI) {//当前使用无线网络
-                WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-                WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-                String ipAddress = intIP2StringIP(wifiInfo.getIpAddress());//得到IPV4地址
-                return ipAddress;
-            }
-        } else {
-            //当前无网络连接,请在设置中打开网络
-        }
-        return null;
-    }
-
-    /**
-     * 将得到的int类型的IP转换为String类型
-     *
-     * @param ip
-     * @return
-     */
-    public static String intIP2StringIP(int ip) {
-        return (ip & 0xFF) + "." +
-                ((ip >> 8) & 0xFF) + "." +
-                ((ip >> 16) & 0xFF) + "." +
-                (ip >> 24 & 0xFF);
     }
 }
