@@ -140,44 +140,57 @@ public class MainActivity extends AppCompatActivity {
             int what = msg.what;
             switch (what) {
                 case 1:
-                    /**
-                     * ListView条目控制在最后一行
-                     */
-               //     sendText = (EditText) findViewById(R.id.sendText);
                     text = sendText.getText().toString();
                     final byte[] buffer = text.getBytes();
-                    //logutils.e("---lin--->  run  2  text" + text);
-
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-
                             if(!updataPara())
                                 return;
                             DatagramSocket ds = null;
                             try {
-                                //new 一个DatagramSocket对象（即打开一个UDP端口准备从此处发出数据包）
-                                //logutils.e("---lin--->  run  2");
-                                //    dp = new DatagramPacket(buffer, buffer.length, new InetSocketAddress("192.168.20.211", 9999));
-                                if(dp == null)
-                                    dp = new DatagramPacket(buffer,
+                                dp = new DatagramPacket(buffer,
                                         buffer.length,
                                         new InetSocketAddress(wifi_ip,wifi_port_num));
-
                                 ds = new DatagramSocket();
                                 ds.send(dp);
                                 ds.close();
                             } catch (SocketException e) {
-                                //logutils.e("---lin--->  run  3");
                                 e.printStackTrace();
                             } catch (IOException e) {
-                                //LogUtils.e("---lin--->  run  4");
-
                                 e.printStackTrace();
                             }
                         }
                     }).start();
+                    break;
 
+                case 3:
+                    String mt = msg.getData().getString("send");
+                    final byte[] buffer2 = mt.getBytes();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(!updataPara())
+                                return;
+                            DatagramSocket ds = null;
+                            try {
+                                dp = new DatagramPacket(buffer2,
+                                        buffer2.length,
+                                        new InetSocketAddress(wifi_ip,wifi_port_num));
+                                ds = new DatagramSocket();
+                                ds.send(dp);
+                                ds.close();
+                            } catch (SocketException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                    break;
+
+                case 4:
+                    Toast.makeText(context, msg.getData().getString("tip"), Toast.LENGTH_LONG).show();
                     break;
 
                 default:
@@ -337,7 +350,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         //toastutils.showLong("网络侦听正在启用");
-                            byte[] buffer = new byte[1024];
+                        showMsg("网络侦听正在启用");
+                        byte[] buffer = new byte[1024];
                         //虽然开辟的缓冲内存大小为1024字节，但也可以设置一个小于该值的缓存空间接收数据包
                         DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
                         DatagramSocket ds = null;
@@ -346,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
                             ds = new DatagramSocket(local_port_num);
                         } catch (SocketException e) {
                             e.printStackTrace();
-                            //toastutils.showLong("无法创建侦听端口");
+                            showMsg("无法创建侦听端口");
                             return;
                         }
                         while (true) {
@@ -356,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
                                 handler.sendEmptyMessage(2);
                                  } catch (IOException e) {
                                 e.printStackTrace();
-                                //toastutils.showLong("无法接收消息");
+                                showMsg("无法接收消息");
                                 return;
                             }
                             rtext = new String(dp.getData(),
@@ -404,6 +418,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private static void showMsg(String s) {
+        Message msg = new Message();
+        Bundle bundle = new Bundle();
+        bundle.clear();
+        bundle.putString("tip",s);
+        msg.what = 4;
+        msg.setData(bundle);
+        handler.sendMessage(msg);
     }
 
     /**
@@ -699,13 +723,13 @@ public class MainActivity extends AppCompatActivity {
             wifi_port_num = Integer.parseInt(wifi_port);
         }catch(NumberFormatException e)
         {
-            Toast.makeText(context, "WIFI通信端口出错", Toast.LENGTH_LONG).show();
+            showMsg("WIFI通信端口出错");
             return false;
         }
         try {
             local_port_num = Integer.parseInt(local_port);
         } catch (NumberFormatException e) {
-            Toast.makeText(context, "本地通信端口出错", Toast.LENGTH_LONG).show();
+            showMsg("本地通信端口出错");
             return false;
         }
         return true;
