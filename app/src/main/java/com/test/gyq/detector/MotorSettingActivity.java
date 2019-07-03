@@ -51,12 +51,9 @@ public class MotorSettingActivity extends AppCompatActivity {
         doPusleBtn.setWidth(width/2);
         doPusleBtn.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-<<<<<<< HEAD
-                new MainActivity.handler.s.MyThread("@G").start();
-=======
+         //       new MainActivity.handler.s.MyThread("@G").start();
 //                new MainActivity.MyThread("@G").start();
                 sendMsg("@G");
->>>>>>> 3eedeb798956fee952762e9ac4cd1422e026d4dc
             }
         });
         Button closePusleBtn = (Button)findViewById(R.id.closePulse);

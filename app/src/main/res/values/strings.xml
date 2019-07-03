@@ -47,7 +47,7 @@
     <string name="valve_position1">位置1</string>
     <string name="valve_position2">位置2</string>
     <string name="title_activity_settings">设置</string>
-
+    <string name="base_permission">APP启动需要访问文件，使用网络等权限</string>
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->

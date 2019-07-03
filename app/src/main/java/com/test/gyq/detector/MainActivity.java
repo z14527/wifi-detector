@@ -1,5 +1,6 @@
 package com.test.gyq.detector;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -40,6 +41,8 @@ import android.widget.Toast;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.example.rxpermisson.PermissionAppCompatActivity;
+
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
@@ -97,10 +100,11 @@ import lecho.lib.hellocharts.view.LineChartView;
 
 import gyq.wifixiaofang.utils.*;
 import gyq.wifixiaofang.ui.*;
+import rx.Subscriber;
 
 import static android.content.Context.WIFI_SERVICE;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends PermissionAppCompatActivity {
 
     private LineChartView lineChart;
     String[] date = {"0"};//X轴的标注
@@ -149,13 +153,9 @@ public class MainActivity extends AppCompatActivity {
                                 return;
                             DatagramSocket ds = null;
                             try {
-<<<<<<< HEAD
+
                                 if(dp == null)
-                                    dp = new DatagramPacket(buffer,
-=======
-                                dp = new DatagramPacket(buffer,
->>>>>>> 3eedeb798956fee952762e9ac4cd1422e026d4dc
-                                        buffer.length,
+                                    dp = new DatagramPacket(buffer,buffer.length,
                                         new InetSocketAddress(wifi_ip,wifi_port_num));
                                 ds = new DatagramSocket();
                                 ds.send(dp);
@@ -193,15 +193,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }).start();
                     break;
-<<<<<<< HEAD
-                case 3:
-                    Bundle bundle = msg.getData();
-                    Toast.makeText(context, bundle.getString("tip"), Toast.LENGTH_LONG).show();
-=======
-
                 case 4:
                     Toast.makeText(context, msg.getData().getString("tip"), Toast.LENGTH_LONG).show();
->>>>>>> 3eedeb798956fee952762e9ac4cd1422e026d4dc
                     break;
 
                 default:
@@ -235,6 +228,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        checkPermission(R.string.base_permission, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET,Manifest.permission.CHANGE_NETWORK_STATE,Manifest.permission.CHANGE_WIFI_STATE,Manifest.permission.CHANGE_WIFI_MULTICAST_STATE,Manifest.permission.ACCESS_WIFI_STATE,Manifest.permission.ACCESS_NETWORK_STATE)
+                .subscribe(new Subscriber() {
+                    @Override
+                    public void onNext(Object o) {
+                        if (o.equals(true)){
+                            //             Toast.makeText(MainActivity.this,"请求权限成功",Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(MainActivity.this,"请求权限失败",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    @Override
+                    public void onCompleted() {
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+                });
         context = MainActivity.this;
         pref = PreferenceManager.getDefaultSharedPreferences(this);
         sendText = (EditText) findViewById(R.id.sendText);
@@ -355,10 +365,7 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-<<<<<<< HEAD
-=======
                         //toastutils.showLong("网络侦听正在启用");
->>>>>>> 3eedeb798956fee952762e9ac4cd1422e026d4dc
                         showMsg("网络侦听正在启用");
                         byte[] buffer = new byte[1024];
                         //虽然开辟的缓冲内存大小为1024字节，但也可以设置一个小于该值的缓存空间接收数据包
@@ -410,14 +417,14 @@ public class MainActivity extends AppCompatActivity {
                 //sendText.setText("");
                 if (!isDoing) {
                     isDoing = true;
-                    doBtn.setImageResource(R.drawable.pause);
+                    doBtn.setImageResource(android.R.drawable.ic_media_pause);
                     if(timer==null)
                         timer = new Timer();
                     timer.schedule(new Mytask(),new Date(),2000);
                     return;
                 }
                 if (isDoing) {
-                    doBtn.setImageResource(R.drawable.start);
+                    doBtn.setImageResource(android.R.drawable.ic_media_play);
                     if(timer!=null) {
                         timer.cancel();
                         timer=null;
@@ -427,16 +434,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    private static void showMsg(String s) {
-        Message msg = new Message();
-        Bundle bundle = new Bundle();
-        bundle.clear();
-        bundle.putString("tip",s);
-        msg.what = 4;
-        msg.setData(bundle);
-        handler.sendMessage(msg);
     }
 
     /**
@@ -531,7 +528,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case 1:
                 if (resultCode == RESULT_OK) {
@@ -583,7 +580,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this,"网络发生了变化",Toast.LENGTH_SHORT).show();
         }
     }
-    public void showMsg(String mtext){
+    public static void showMsg(String mtext){
         Message msg = new Message();
         msg.what = 3;
         Bundle bundle = new Bundle();

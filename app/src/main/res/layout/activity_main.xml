@@ -18,7 +18,7 @@
         <lecho.lib.hellocharts.view.LineChartView
             android:id="@+id/line_chart"
             android:layout_width="fill_parent"
-            android:layout_height="120dp"/>
+            android:layout_height="200dp"/>
         <EditText
             android:id="@+id/sendText"
             android:layout_width="match_parent"
@@ -71,7 +71,7 @@
             android:layout_below="@id/clean_2"
             android:layout_marginTop="5dp"
             android:background="@drawable/border_white"
-            android:src="@drawable/info"/>
+            android:src="@android:drawable/ic_menu_info_details"/>
         <ImageButton
             android:id="@+id/wifi"
             android:layout_width="wrap_content"
@@ -79,28 +79,29 @@
             android:layout_toRightOf="@id/info"
             android:layout_below="@id/clean_2"
             android:layout_marginTop="5dp"
+            android:layout_marginLeft="20dp"
             android:background="@drawable/border_white"
-            android:src="@drawable/wifi"/>
+            android:src="@android:drawable/ic_menu_preferences"/>
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/get"
             android:layout_toRightOf="@id/wifi"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="20dp"
             android:layout_below="@id/clean_2"
             android:layout_marginTop="5dp"
             android:background="@drawable/border_white"
-            android:src="@drawable/get"/>
+            android:src="@android:drawable/ic_menu_send"/>
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/go"
             android:layout_toRightOf="@id/get"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="20dp"
             android:layout_below="@id/clean_2"
             android:layout_marginTop="5dp"
             android:background="@drawable/border_white"
-            android:src="@drawable/start"/>
+            android:src="@android:drawable/ic_media_play"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
