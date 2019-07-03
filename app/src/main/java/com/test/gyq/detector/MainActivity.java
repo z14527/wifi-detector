@@ -149,28 +149,59 @@ public class MainActivity extends AppCompatActivity {
                                 return;
                             DatagramSocket ds = null;
                             try {
+<<<<<<< HEAD
                                 if(dp == null)
                                     dp = new DatagramPacket(buffer,
+=======
+                                dp = new DatagramPacket(buffer,
+>>>>>>> 3eedeb798956fee952762e9ac4cd1422e026d4dc
                                         buffer.length,
                                         new InetSocketAddress(wifi_ip,wifi_port_num));
-
                                 ds = new DatagramSocket();
                                 ds.send(dp);
                                 ds.close();
                             } catch (SocketException e) {
-                                //logutils.e("---lin--->  run  3");
                                 e.printStackTrace();
                             } catch (IOException e) {
-                                //LogUtils.e("---lin--->  run  4");
-
                                 e.printStackTrace();
                             }
                         }
                     }).start();
                     break;
+
+                case 3:
+                    String mt = msg.getData().getString("send");
+                    final byte[] buffer2 = mt.getBytes();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(!updataPara())
+                                return;
+                            DatagramSocket ds = null;
+                            try {
+                                dp = new DatagramPacket(buffer2,
+                                        buffer2.length,
+                                        new InetSocketAddress(wifi_ip,wifi_port_num));
+                                ds = new DatagramSocket();
+                                ds.send(dp);
+                                ds.close();
+                            } catch (SocketException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                    break;
+<<<<<<< HEAD
                 case 3:
                     Bundle bundle = msg.getData();
                     Toast.makeText(context, bundle.getString("tip"), Toast.LENGTH_LONG).show();
+=======
+
+                case 4:
+                    Toast.makeText(context, msg.getData().getString("tip"), Toast.LENGTH_LONG).show();
+>>>>>>> 3eedeb798956fee952762e9ac4cd1422e026d4dc
                     break;
 
                 default:
@@ -324,6 +355,10 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+<<<<<<< HEAD
+=======
+                        //toastutils.showLong("网络侦听正在启用");
+>>>>>>> 3eedeb798956fee952762e9ac4cd1422e026d4dc
                         showMsg("网络侦听正在启用");
                         byte[] buffer = new byte[1024];
                         //虽然开辟的缓冲内存大小为1024字节，但也可以设置一个小于该值的缓存空间接收数据包
@@ -392,6 +427,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private static void showMsg(String s) {
+        Message msg = new Message();
+        Bundle bundle = new Bundle();
+        bundle.clear();
+        bundle.putString("tip",s);
+        msg.what = 4;
+        msg.setData(bundle);
+        handler.sendMessage(msg);
     }
 
     /**
@@ -696,13 +741,13 @@ public class MainActivity extends AppCompatActivity {
             wifi_port_num = Integer.parseInt(wifi_port);
         }catch(NumberFormatException e)
         {
-            Toast.makeText(context, "WIFI通信端口出错", Toast.LENGTH_LONG).show();
+            showMsg("WIFI通信端口出错");
             return false;
         }
         try {
             local_port_num = Integer.parseInt(local_port);
         } catch (NumberFormatException e) {
-            Toast.makeText(context, "本地通信端口出错", Toast.LENGTH_LONG).show();
+            showMsg("本地通信端口出错");
             return false;
         }
         return true;
