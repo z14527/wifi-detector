@@ -20,7 +20,7 @@
     <string name="receiver">数据接收处</string>
     <string name="send">发送</string>
     <string name="clean">清空</string>
-    <string name="cyperight">Copyright © 2018</string>
+    <string name="cyperight">Copyright © 2019</string>
     <string name="motor_setting">设置步进电机工作状态</string>
     <string name="step_direction">设置步进方向</string>
     <string name="step_speed">设置步进速度</string>
