@@ -93,7 +93,7 @@
             android:layout_below="@id/clean_2"
             android:layout_marginTop="5dp"
             android:background="@drawable/border_white"
-            android:src="@android:drawable/ic_menu_send"/>
+            android:src="@android:drawable/ic_menu_add"/>
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -105,14 +105,5 @@
             android:background="@drawable/border_white"
             android:src="@android:drawable/ic_media_play"/>
     </LinearLayout>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cyperight"
-        android:textSize="10sp"
-        android:layout_toLeftOf="@id/go"
-        android:layout_below="@id/go"
-        android:layout_marginTop="5dp"
-        />
 </LinearLayout>
 

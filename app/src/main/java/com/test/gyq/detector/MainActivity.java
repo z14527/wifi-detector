@@ -209,20 +209,7 @@ public class MainActivity extends PermissionAppCompatActivity {
 
         ;
     };
-    public static Handler myHandler = new Handler();
-//    {
-//        @Override
-//        public void handleMessage(Message msg) {
-//            if (msg.what == 0x11) {
-//                Bundle bundle = msg.getData();
-//      //          if (bundle.getString("tip") == null) {
-//                Receiver.append(bundle.getString("receive") + "\n");
-//                Receiver.invalidate();
-//       //         } else
-//       //             Toast.makeText(context, bundle.getString("tip"), Toast.LENGTH_LONG).show();
-//            }
-//        }
-//    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -351,17 +338,6 @@ public class MainActivity extends PermissionAppCompatActivity {
             public void onClick(View v) {
                 if(!updataPara())
                     return;
-    //           boolean a = NetworkUtils.isWifiAvailable();
-//                if (a) {
-//                    Toast.makeText(context, "当前网络可用", Toast.LENGTH_LONG).show();
-                    //toastutils.showShort("当前网络可用");
-  //              } else {
-//                    Toast.makeText(context, "当前网络不可用", Toast.LENGTH_LONG).show();
-                    //toastutils.showShort("当前网络不可用");
-    //            }
-//                Toast.makeText(context, "当前ip地址为 " +
-//                              NetworkUtils.getIPAddress(true),Toast.LENGTH_LONG).show();
-                //toastutils.showLong("当前ip地址为 " + NetworkUtils.getIPAddress(true));
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -582,104 +558,12 @@ public class MainActivity extends PermissionAppCompatActivity {
     }
     public static void showMsg(String mtext){
         Message msg = new Message();
-        msg.what = 3;
+        msg.what = 4;
         Bundle bundle = new Bundle();
         bundle.clear();
         bundle.putString("tip", mtext);
         msg.setData(bundle);
         handler.sendMessage(msg);
-    }
-    static class MyThread extends Thread {
-
-        private String text;
-
-        public MyThread(String str) {
-            text = str;
-        }
-
-        @Override
-        public void run() {
-            if(wifi_ip=="" || wifi_port=="")
-                return;
-            if((local_ip=="" || local_port=="") && patterns == "UDP")
-                return;
-             try{
-                wifi_port_num = Integer.parseInt(wifi_port);
-            }catch(NumberFormatException e)
-            {
-                Toast.makeText(context, "WIFI通信端口出错", Toast.LENGTH_LONG).show();
-                return;
-            }
-            if(patterns=="UDP") {
-                try {
-                    local_port_num = Integer.parseInt(local_port);
-                } catch (NumberFormatException e) {
-                    Toast.makeText(context, "本地通信端口出错", Toast.LENGTH_LONG).show();
-                    return;
-                }
-            }
-
-            Message msg = new Message();
-            msg.what = 0x11;
-            Bundle bundle = new Bundle();
-            bundle.clear();
-            if (patterns.equals("TCP")) {
-                try {
-                    if(socket == null) {
-                        socket = new Socket();
-                        socket.setReuseAddress(true);
-                        socket.connect(new InetSocketAddress(wifi_ip, wifi_port_num), 10000);
-                    }
-                    OutputStream writer = socket.getOutputStream();
-                    writer.write(text.getBytes("UTF-8"));
-                    writer.flush();
-                    InputStream reader = socket.getInputStream();
-                    byte[] buf = new byte[1024 * 4];
-                    int receives = reader.read(buf);
-                    String receive = new String(buf, 0, receives);
-                    bundle.putString("receive", receive);
-                    msg.setData(bundle);
-                    myHandler.sendMessage(msg);
-                    reader.close();
-                    writer.close();
-         //           socket.close();
-                } catch (SocketTimeoutException aa) {
-                    bundle.putString("tip", "服务器连接失败！请检查网络是否打开");
-                    msg.setData(bundle);
-                    myHandler.sendMessage(msg);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else if (patterns.equals("UDP")) {
-                try {
-                    if (socket2 == null) {
-                        socket2 = new DatagramSocket(local_port_num);
-                        socket2.setReuseAddress(true);
-                        socket2.bind(new InetSocketAddress(wifi_port_num));
-                    }
-                    InetAddress serverAddress = InetAddress.getByName(wifi_ip);
-                    byte output_data[] = text.getBytes();
-                    DatagramPacket outputPacket = new DatagramPacket(output_data,
-                            output_data.length, serverAddress, wifi_port_num);
-                    socket2.send(outputPacket);
-                    byte input_data[] = new byte[1024 * 4];
-                    DatagramPacket inputPacket = new DatagramPacket(input_data,
-                            input_data.length);
-                    socket2.receive(inputPacket);
-                    String receive = new String(inputPacket.getData(), inputPacket.getOffset(), inputPacket.getLength());
-                    bundle.putString("receive", receive);
-                    msg.setData(bundle);
-                    myHandler.sendMessage(msg);
-            //        Receiver.append(receive);
-             //       socket2.close();
-                } catch (SocketTimeoutException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
     }
     public class Mytask extends TimerTask {
         @Override
